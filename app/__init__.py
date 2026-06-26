@@ -32,11 +32,13 @@ def create_app(config_class=Config):
     )
     from app.routes.companies import companies_bp
     from app.routes.contracts import contracts_bp
+    from app.routes.docs import docs_bp
     from app.routes.options import options_bp
 
     app.register_blueprint(contracts_bp)
     app.register_blueprint(options_bp)
     app.register_blueprint(companies_bp)
+    app.register_blueprint(docs_bp)
 
     @app.route("/")
     def index():

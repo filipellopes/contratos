@@ -110,15 +110,11 @@
         <p class="mt-4"><strong>{{ context.data_extenso }}</strong></p>
 
         <div class="row mt-4">
-            {% for c in context.contratantes %}
             <div class="col-md-6 mb-3">
-                <p class="mb-0">{{ c.nome }}</p>
-                <p class="mb-0">CONTRATANTE — CPF: {{ c.cpf }}</p>
+                <pre class="mb-0 contract-preview" style="white-space: pre-wrap; font-family: inherit; background: transparent; border: none; padding: 0;">{{ context.bloco_assinatura_contratantes }}</pre>
             </div>
-            {% endfor %}
             <div class="col-md-6 mb-3">
-                <p class="mb-0">{{ context.nome_contratado }}</p>
-                <p class="mb-0">CONTRATADA — CPF: {{ context.cpf_contratado }}</p>
+                <pre class="mb-0 contract-preview" style="white-space: pre-wrap; font-family: inherit; background: transparent; border: none; padding: 0;">{{ context.bloco_assinatura_contratada }}</pre>
             </div>
         </div>
     </section>

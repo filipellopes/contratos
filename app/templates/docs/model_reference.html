@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %}Referência do modelo — Valore{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Referência do modelo de contrato</h1>
+        <p class="text-muted mb-0">Onde cada variável aparece no Word, como cadastrar opções e qual usar como valor interno.</p>
+    </div>
+    <a href="{{ url_for('docs.download_template') }}" class="btn btn-outline-primary">Baixar modelo Word</a>
+</div>
+
+<ul class="nav nav-tabs mb-4" id="refTabs" role="tablist">
+    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-vars">Variáveis Word</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-opcoes">Campos de opções</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-cadastradas">Opções cadastradas</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-form">Formulário</button></li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="tab-vars">
+        {% if missing_in_docx %}
+        <div class="alert alert-warning">
+            <strong>Placeholders ausentes no .docx atual:</strong>
+            {% for v in missing_in_docx %}<code class="me-1">{{ "{{ " }}{{ v }}{{ " }}" }}</code>{% endfor %}
+            — regenere com <code>python scripts/build_template.py</code> ou edite o Word manualmente.
+        </div>
+        {% endif %}
+
+        <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Variável Word</th>
+                        <th>Seção</th>
+                        <th>Onde no documento</th>
+                        <th>Origem do valor</th>
+                        <th>Campo opção</th>
+                        <th>No .docx?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in word_variables %}
+                    <tr>
+                        <td><code>{{ "{{ " }}{{ v.variable }}{{ " }}" }}</code></td>
+                        <td>{{ v.section }}</td>
+                        <td>{{ v.where }}</td>
+                        <td class="small">{{ v.source }}</td>
+                        <td>{% if v.option_field %}<code>{{ v.option_field }}</code>{% else %}—{% endif %}</td>
+                        <td>
+                            {% if v.variable in missing_in_docx %}
+                            <span class="badge bg-warning text-dark">ausente</span>
+                            {% else %}
+                            <span class="badge bg-success">ok</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if conditional_tags %}
+        <h2 class="h5 mt-4">Blocos condicionais</h2>
+        <ul>
+            {% for t in conditional_tags %}<li><code>{{ t }}</code></li>{% endfor %}
+        </ul>
+        <p class="small text-muted">Ex.: 13ª parcela — <code>extra_data_json</code>: <code>{"exibir_clausula": false}</code> omite a cláusula 4.6.</p>
+        {% endif %}
+    </div>
+
+    <div class="tab-pane fade" id="tab-opcoes">
+        <p>Ao cadastrar em <a href="{{ url_for('options.list_options') }}">Opções</a>, use exatamente estes valores no campo <strong>Campo</strong> e escolha um <strong>valor interno</strong> único (sem espaços, preferir <code>snake_case</code>).</p>
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th>Campo (field_name)</th>
+                        <th>Nome exibido</th>
+                        <th>Bloco formulário</th>
+                        <th>Exemplo valor interno</th>
+                        <th>Uso do texto completo (full_text)</th>
+                        <th>extra_data_json</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for g in option_guide %}
+                    <tr>
+                        <td><code>{{ g.field_name }}</code></td>
+                        <td>{{ field_names[g.field_name] }}</td>
+                        <td>{{ g.form_block }}</td>
+                        <td><code>{{ g.valor_interno_hint }}</code></td>
+                        <td class="small">{{ g.full_text_use }}</td>
+                        <td class="small"><code>{{ g.extra_data_use }}</code></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h2 class="h6 card-title">Regras rápidas</h2>
+                <ul class="mb-0 small">
+                    <li><strong>Nome exibido</strong> → aparece na lista suspensa do formulário.</li>
+                    <li><strong>Valor interno</strong> → salvo no formulário e usado para buscar a opção no banco (<code>option_value</code>).</li>
+                    <li><strong>Texto completo</strong> → inserido na cláusula correspondente do contrato.</li>
+                    <li><strong>Empresa contratada</strong> não é opção — cadastre em <a href="{{ url_for('companies.list_companies') }}">Empresas</a>.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="tab-cadastradas">
+        <p class="text-muted">Valores internos já cadastrados no sistema (use os mesmos ao criar novas opções compatíveis).</p>
+        {% for field, opts in options_by_field.items() %}
+        <div class="card mb-3">
+            <div class="card-header fw-semibold"><code>{{ field }}</code> — {{ field_names[field] }}</div>
+            <div class="card-body p-0">
+                {% if opts %}
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Label</th><th>Valor interno</th><th>Ativa</th><th>Texto completo (início)</th><th>extra_data</th></tr></thead>
+                    <tbody>
+                        {% for o in opts %}
+                        <tr class="{% if not o.is_active %}table-secondary{% endif %}">
+                            <td>{{ o.option_label }}</td>
+                            <td><code>{{ o.option_value }}</code></td>
+                            <td>{% if o.is_active %}Sim{% else %}Não{% endif %}</td>
+                            <td class="small text-truncate" style="max-width:280px">{{ (o.full_text or '—')[:120] }}{% if o.full_text and o.full_text|length > 120 %}…{% endif %}</td>
+                            <td class="small"><code>{{ o.extra_data_json or '{}' }}</code></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="p-3 mb-0 text-muted">Nenhuma opção cadastrada. <a href="{{ url_for('options.create_option') }}">Criar opção</a></p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="tab-pane fade" id="tab-form">
+        <p class="text-muted">Campos preenchidos diretamente no formulário (não vêm da tabela de opções).</p>
+        <table class="table table-sm">
+            <thead class="table-light"><tr><th>Campo</th><th>Bloco</th><th>Tipo</th><th>Obrigatório</th></tr></thead>
+            <tbody>
+                {% for f in form_fields %}
+                <tr>
+                    <td><code>{{ f.field }}</code></td>
+                    <td>{{ f.block }}</td>
+                    <td>{{ f.type }}</td>
+                    <td>{% if f.required %}Sim{% else %}Não{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

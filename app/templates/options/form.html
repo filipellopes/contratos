@@ -3,6 +3,7 @@
 
 {% block content %}
 <h1 class="h3 mb-4">{% if option %}Editar opção{% else %}Nova opção{% endif %}</h1>
+<p class="text-muted">Consulte a <a href="{{ url_for('docs.model_reference') }}">Referência do modelo</a> para ver o campo (<code>field_name</code>), valor interno e uso do texto completo.</p>
 
 <form method="post" class="card">
     <div class="card-body row g-3">

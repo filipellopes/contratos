@@ -22,6 +22,17 @@ def _get_option(field_name, option_value):
     ).first()
 
 
+def _build_bloco_assinaturas(contratantes, contratada):
+    linhas_contratantes = []
+    for c in contratantes:
+        linhas_contratantes.append(f"{c['nome']}\nCONTRATANTE — CPF: {c['cpf']}")
+    bloco_contratantes = "\n\n".join(linhas_contratantes)
+    bloco_contratada = (
+        f"{contratada['nome_contratado']}\nCONTRATADA — CPF: {contratada['cpf_contratado']}"
+    )
+    return bloco_contratantes, bloco_contratada
+
+
 def _build_texto_partes(contratantes, contratada):
     partes = []
     for index, c in enumerate(contratantes):
@@ -159,4 +170,7 @@ def build_contract_context(form_data):
         "data_extenso": format_date_extenso(data_contrato, local=local),
         "valor_mensal_total": total,
     }
+    bloco_c, bloco_t = _build_bloco_assinaturas(contratantes, contratada)
+    context["bloco_assinatura_contratantes"] = bloco_c
+    context["bloco_assinatura_contratada"] = bloco_t
     return context
