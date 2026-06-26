@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Prévia do contrato — Valore{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/preview.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Prévia do contrato</h1>
+</div>
+
+<div class="alert alert-info">
+    Esta é uma prévia em HTML. A versão final em Word/PDF será gerada a partir do modelo Word oficial.
+</div>
+
+<article class="contract-preview mx-auto">
+    <header class="text-center mb-4">
+        <h2 class="mb-0">VALORE</h2>
+        <p class="mb-0">Consultores Associados</p>
+        <h3 class="mt-2">Contrato de Assessoria Contábil</h3>
+        <p class="text-muted">CPSA-VCA-2026</p>
+    </header>
+
+    <section class="mb-4">
+        <h4>📋 RESUMO PARA O CLIENTE</h4>
+        <table class="table table-bordered table-sm preview-table">
+            <tbody>
+                <tr><th>Serviço</th><td>{{ context.tipo_servico }}</td></tr>
+                <tr><th>Prestadora</th><td>{{ context.empresa_contratada }}</td></tr>
+                <tr><th>Início e Vigência</th><td>{{ context.inicio_vigencia_formatada }} e {{ context.texto_vigencia }}</td></tr>
+                <tr><th>Pagamento</th><td>{{ context.texto_forma_pagamento }}</td></tr>
+                <tr><th>Reajuste</th><td>{{ context.label_reajuste }}</td></tr>
+                <tr><th>13ª Parcela</th><td>{{ context.label_decima_terceira_parcela }}</td></tr>
+                <tr><th>Rescisão</th><td>{{ context.label_rescisao }}</td></tr>
+                <tr><th>Suspensão</th><td>{{ context.label_suspensao }}</td></tr>
+                <tr><th>Foro</th><td>{{ context.texto_foro }}</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="mb-4">
+        <h4 class="text-center">CONTRATO DE PRESTAÇÃO DE SERVIÇOS PROFISSIONAIS</h4>
+        <p>Pelo presente instrumento particular, de um lado:</p>
+
+        <table class="table table-bordered preview-table mb-3">
+            <thead>
+                <tr>
+                    <th>CNPJ</th>
+                    <th>Enquadramento Tributário</th>
+                    <th>Razão Social</th>
+                    <th>Valor Mensal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in context.contratantes %}
+                <tr>
+                    <td>{{ c.cnpj }}</td>
+                    <td>{{ c.enquadramento }}</td>
+                    <td>{{ c.razao_social }}</td>
+                    <td>{{ c.valor_mensal_formatado }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-justify">{{ context.texto_partes }}</p>
+    </section>
+
+    <section class="mb-3">
+        <h5>1. OBJETO</h5>
+        <p>1.1  Este Contrato regula a prestação de serviços de assessoria contábil, administrativa e fiscal pela CONTRATADA à CONTRATANTE, conforme descrito na Cláusula 2.</p>
+    </section>
+
+    <section class="mb-3">
+        <h5>2. SERVIÇOS</h5>
+        <p>2.1  A CONTRATANTE declara estar enquadrada sob o regime tributário: {{ context.texto_regime_tributario }}.</p>
+        <div class="clause-text">{{ context.texto_detalhamento_servico | replace('\n', '<br>') | safe }}</div>
+    </section>
+
+    <section class="mb-3">
+        <h5>3. VIGÊNCIA</h5>
+        <p>{{ context.texto_vigencia_clausula }}</p>
+        <p>3.2  A rescisão sem o aviso previsto na Cláusula 3.1 implica multa de 2 (duas) parcelas mensais pelo valor vigente à época.</p>
+        <p>3.3  Qualquer das Partes poderá rescindir este Contrato de imediato, sem aviso prévio e sem a multa da Cláusula 3.2, em caso de inadimplência superior a 90 dias, fraude ou descumprimento grave.</p>
+    </section>
+
+    <section class="mb-3">
+        <h5>4. VALORES E PAGAMENTO</h5>
+        <p>{{ context.texto_clausula_4_1 }}</p>
+        <p>{{ context.texto_clausula_4_2 }}</p>
+        {% if context.exibir_clausula_decima_terceira %}
+        <p>{{ context.texto_decima_terceira_parcela }}</p>
+        {% endif %}
+        <p>4.8  Uma parcela no valor da cláusula 3.1 é prevista na assinatura do contrato para implementação do projeto.</p>
+    </section>
+
+    <section class="mb-3">
+        <h5>6. OBRIGAÇÕES DA CONTRATANTE</h5>
+        <p>{{ context.texto_suspensao }}</p>
+    </section>
+
+    <section class="mb-3">
+        <h5>8. FORO</h5>
+        <p>{{ context.texto_clausula_8_1 }}</p>
+    </section>
+
+    <section class="mb-4">
+        <p>As Partes declaram ter lido, entendido e aceito integralmente os termos deste Contrato.</p>
+        <p class="mt-4"><strong>{{ context.data_extenso }}</strong></p>
+
+        <div class="row mt-4">
+            {% for c in context.contratantes %}
+            <div class="col-md-6 mb-3">
+                <p class="mb-0">{{ c.nome }}</p>
+                <p class="mb-0">CONTRATANTE — CPF: {{ c.cpf }}</p>
+            </div>
+            {% endfor %}
+            <div class="col-md-6 mb-3">
+                <p class="mb-0">{{ context.nome_contratado }}</p>
+                <p class="mb-0">CONTRATADA — CPF: {{ context.cpf_contratado }}</p>
+            </div>
+        </div>
+    </section>
+</article>
+
+<div class="d-flex gap-2 mt-4">
+    <form method="post" action="{{ url_for('contracts.generate_contract') }}">
+        <button type="submit" class="btn btn-success btn-lg">Gerar contrato</button>
+    </form>
+    <a href="{{ url_for('contracts.new_contract') }}" class="btn btn-outline-secondary btn-lg">Voltar e editar</a>
+</div>
+{% endblock %}

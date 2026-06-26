@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% block title %}Novo contrato — Valore{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4">Novo contrato</h1>
+
+<form method="post" action="{{ url_for('contracts.preview_contract') }}" id="contract-form" novalidate>
+    <div class="card mb-4">
+        <div class="card-header fw-semibold">Identificação</div>
+        <div class="card-body">
+            <div class="col-md-6">
+                <label class="form-label">Nome de quem está gerando *</label>
+                <input type="text" class="form-control" name="generated_by_name" value="{{ form_data.generated_by_name if form_data else '' }}" required>
+                {% if errors.get('generated_by_name') %}<div class="text-danger small">{{ errors.generated_by_name }}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header fw-semibold">Bloco 1 — Dados gerais do contrato</div>
+        <div class="card-body row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Tipo de serviço</label>
+                <select class="form-select" name="tipo_servico" required>
+                    <option value="">Selecione...</option>
+                    {% for opt in dropdown_options.tipo_servico %}
+                    <option value="{{ opt.option_value }}" {% if form_data and form_data.tipo_servico == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Início da vigência</label>
+                <input type="date" class="form-control" name="inicio_vigencia" value="{{ form_data.inicio_vigencia if form_data else '' }}" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Forma de pagamento</label>
+                <select class="form-select" name="forma_pagamento" required>
+                    <option value="">Selecione...</option>
+                    {% for opt in dropdown_options.forma_pagamento %}
+                    <option value="{{ opt.option_value }}" {% if form_data and form_data.forma_pagamento == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Dia do vencimento</label>
+                <input type="number" class="form-control" name="dia_vencimento" min="1" max="31" value="{{ form_data.dia_vencimento if form_data else '25' }}" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Mês do vencimento</label>
+                <select class="form-select" name="mes_vencimento" required>
+                    <option value="">Selecione...</option>
+                    {% for opt in dropdown_options.mes_vencimento %}
+                    <option value="{{ opt.option_value }}" {% if form_data and form_data.mes_vencimento == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Reajuste</label>
+                <select class="form-select" name="reajuste" required>
+                    <option value="">Selecione...</option>
+                    {% for opt in dropdown_options.reajuste %}
+                    <option value="{{ opt.option_value }}" {% if form_data and form_data.reajuste == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">13ª parcela</label>
+                <select class="form-select" name="decima_terceira_parcela" required>
+                    <option value="">Selecione...</option>
+                    {% for opt in dropdown_options.decima_terceira_parcela %}
+                    <option value="{{ opt.option_value }}" {% if form_data and form_data.decima_terceira_parcela == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Rescisão</label>
+                <select class="form-select" name="rescisao" required>
+                    <option value="">Selecione...</option>
+                    {% for opt in dropdown_options.rescisao %}
+                    <option value="{{ opt.option_value }}" {% if form_data and form_data.rescisao == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Suspensão</label>
+                <select class="form-select" name="suspensao" required>
+                    <option value="">Selecione...</option>
+                    {% for opt in dropdown_options.suspensao %}
+                    <option value="{{ opt.option_value }}" {% if form_data and form_data.suspensao == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Foro</label>
+                <select class="form-select" name="foro" required>
+                    <option value="">Selecione...</option>
+                    {% for opt in dropdown_options.foro %}
+                    <option value="{{ opt.option_value }}" {% if form_data and form_data.foro == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">Bloco 2 — Dados da(s) contratante(s)</span>
+            <button type="button" class="btn btn-sm btn-outline-primary" id="btn-add-contratante">Adicionar contratante</button>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">Detalhamento do serviço</label>
+                <select class="form-select" name="detalhamento_servico" required>
+                    <option value="">Selecione...</option>
+                    {% for opt in dropdown_options.detalhamento_servico %}
+                    <option value="{{ opt.option_value }}" {% if form_data and form_data.detalhamento_servico == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div id="contratantes-container">
+                {% if form_data and form_data.contratantes %}
+                    {% for c in form_data.contratantes %}
+                        {% set index = loop.index0 %}
+                        {% include "partials/contratante_row.html" %}
+                    {% endfor %}
+                {% else %}
+                    {% set index = 0 %}{% set c = none %}
+                    {% include "partials/contratante_row.html" %}
+                {% endif %}
+            </div>
+            <div class="alert alert-light border mt-3 mb-0">
+                <strong>Total mensal:</strong> <span id="valor-total">R$ 0,00</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header fw-semibold">Bloco 3 — Dados da contratada/prestadora</div>
+        <div class="card-body row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Empresa contratada</label>
+                <select class="form-select" name="empresa_contratada_id" id="empresa_contratada_id" required>
+                    <option value="">Selecione...</option>
+                    {% for company in companies %}
+                    <option value="{{ company.id }}" {% if form_data and form_data.empresa_contratada_id|string == company.id|string %}selected{% endif %}>{{ company.company_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">CNPJ contratada</label>
+                <input type="text" class="form-control mask-cnpj" name="cnpj_contratada" id="cnpj_contratada" value="{{ form_data.cnpj_contratada if form_data else '' }}" required>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Endereço contratado</label>
+                <input type="text" class="form-control" name="endereco_contratado" id="endereco_contratado" value="{{ form_data.endereco_contratado if form_data else '' }}" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Nome contratado</label>
+                <input type="text" class="form-control" name="nome_contratado" id="nome_contratado" value="{{ form_data.nome_contratado if form_data else '' }}" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">CPF contratado</label>
+                <input type="text" class="form-control mask-cpf" name="cpf_contratado" id="cpf_contratado" value="{{ form_data.cpf_contratado if form_data else '' }}" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">CRC contratado</label>
+                <input type="text" class="form-control" name="crc_contratado" id="crc_contratado" value="{{ form_data.crc_contratado if form_data else '' }}" required>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header fw-semibold">Bloco 4 — Local e data</div>
+        <div class="card-body row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Local</label>
+                <input type="text" class="form-control" name="local" value="{{ form_data.local if form_data else 'Recife/PE' }}" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Data</label>
+                <input type="date" class="form-control" name="data_contrato" value="{{ form_data.data_contrato if form_data else '' }}" required>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary btn-lg">Visualizar prévia</button>
+        <a href="{{ url_for('contracts.list_contracts') }}" class="btn btn-outline-secondary btn-lg">Cancelar</a>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/contract_form.js') }}"></script>
+{% endblock %}

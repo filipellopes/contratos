@@ -1,0 +1,17 @@
+services:
+  contratos:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-altere-em-producao}
+      PDF_CONVERSION: auto
+      FLASK_DEBUG: "0"
+    volumes:
+      - contratos_instance:/app/instance
+      - contratos_generated:/app/app/generated_contracts
+    restart: unless-stopped
+
+volumes:
+  contratos_instance:
+  contratos_generated:

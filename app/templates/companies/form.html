@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{% if company %}Editar empresa{% else %}Nova empresa{% endif %} — Valore{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4">{% if company %}Editar empresa{% else %}Nova empresa{% endif %}</h1>
+
+<form method="post" class="card">
+    <div class="card-body row g-3">
+        <div class="col-md-8">
+            <label class="form-label">Nome da empresa</label>
+            <input type="text" class="form-control" name="company_name" value="{{ company.company_name if company else '' }}" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">CNPJ</label>
+            <input type="text" class="form-control mask-cnpj" name="cnpj" value="{{ company.cnpj if company else '' }}" required>
+        </div>
+        <div class="col-12">
+            <label class="form-label">Endereço</label>
+            <input type="text" class="form-control" name="address" value="{{ company.address if company else '' }}">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Nome do responsável</label>
+            <input type="text" class="form-control" name="responsible_name" value="{{ company.responsible_name if company else '' }}">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">CPF do responsável</label>
+            <input type="text" class="form-control mask-cpf" name="responsible_cpf" value="{{ company.responsible_cpf if company else '' }}">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">CRC</label>
+            <input type="text" class="form-control" name="crc" value="{{ company.crc if company else '' }}">
+        </div>
+        <div class="col-12">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {% if not company or company.is_active %}checked{% endif %}>
+                <label class="form-check-label" for="is_active">Empresa ativa</label>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="{{ url_for('companies.list_companies') }}" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.mask-cnpj, .mask-cpf').forEach(el => {
+    if (window.applyMasks) window.applyMasks(el.closest('form') || document);
+});
+</script>
+{% endblock %}

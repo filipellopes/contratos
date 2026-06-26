@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Opções — Valore{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Opções de contrato</h1>
+    <a href="{{ url_for('options.create_option') }}" class="btn btn-primary">Nova opção</a>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="field_name" class="form-select" onchange="this.form.submit()">
+            <option value="">Todos os campos</option>
+            {% for field in dropdown_fields %}
+            <option value="{{ field }}" {% if field_filter == field %}selected{% endif %}>{{ FIELD_NAMES[field] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Campo</th>
+                <th>Label</th>
+                <th>Valor</th>
+                <th>Ordem</th>
+                <th>Ativa</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for option in options %}
+            <tr class="{% if not option.is_active %}table-secondary{% endif %}">
+                <td>{{ option.field_label }}</td>
+                <td>{{ option.option_label }}</td>
+                <td><code>{{ option.option_value }}</code></td>
+                <td>{{ option.sort_order }}</td>
+                <td>{% if option.is_active %}Sim{% else %}Não{% endif %}</td>
+                <td class="text-nowrap">
+                    <a href="{{ url_for('options.edit_option', option_id=option.id) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                    {% if option.is_active %}
+                    <form method="post" action="{{ url_for('options.deactivate_option', option_id=option.id) }}" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-warning">Desativar</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="text-center text-muted py-4">Nenhuma opção cadastrada.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

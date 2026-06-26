@@ -1,0 +1,40 @@
+.contract-preview {
+    max-width: 900px;
+    background: #fff;
+    padding: 2.5rem 3rem;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #111;
+}
+
+.contract-preview h2,
+.contract-preview h3,
+.contract-preview h4,
+.contract-preview h5 {
+    font-family: "Times New Roman", Times, serif;
+}
+
+.contract-preview .preview-table th {
+    width: 35%;
+    background: #f8f9fa;
+    font-weight: 600;
+}
+
+.contract-preview .clause-text {
+    text-align: justify;
+    white-space: pre-wrap;
+}
+
+@media print {
+    .navbar, .alert, .btn, form {
+        display: none !important;
+    }
+    .contract-preview {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+    }
+}

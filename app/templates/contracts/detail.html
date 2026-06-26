@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Contrato #{{ contract.id }} — Valore{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h1 class="h3">Contrato #{{ contract.id }}</h1>
+        <span class="badge {% if contract.status == 'gerado_com_sucesso' %}bg-success{% elif contract.status.startswith('erro') %}bg-danger{% else %}bg-secondary{% endif %}">{{ contract.status_label }}</span>
+    </div>
+    <div class="d-flex gap-2">
+        {% if contract.docx_path %}
+        <a href="{{ url_for('contracts.download_docx', contract_id=contract.id) }}" class="btn btn-primary">Baixar Word</a>
+        {% endif %}
+        {% if contract.pdf_path %}
+        <a href="{{ url_for('contracts.download_pdf', contract_id=contract.id) }}" class="btn btn-danger">Baixar PDF</a>
+        {% endif %}
+    </div>
+</div>
+
+{% if contract.error_message %}
+<div class="alert alert-danger">
+    <pre class="mb-0" style="white-space: pre-wrap; font-family: inherit;">{{ contract.error_message }}</pre>
+    {% if contract.status == 'erro_ao_converter_pdf' and contract.docx_path %}
+    <form method="post" action="{{ url_for('contracts.retry_pdf', contract_id=contract.id) }}" class="mt-3">
+        <button type="submit" class="btn btn-sm btn-outline-danger">Tentar gerar PDF novamente</button>
+    </form>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header fw-semibold">Dados principais</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Gerado por</dt><dd class="col-sm-7">{{ contract.generated_by_name }}</dd>
+                    <dt class="col-sm-5">Data/hora</dt><dd class="col-sm-7">{{ contract.created_at.strftime('%d/%m/%Y %H:%M') if contract.created_at else '—' }}</dd>
+                    <dt class="col-sm-5">Tipo de serviço</dt><dd class="col-sm-7">{{ contract.tipo_servico }}</dd>
+                    <dt class="col-sm-5">Valor mensal total</dt><dd class="col-sm-7">{{ contract.valor_mensal | format_currency }}</dd>
+                    <dt class="col-sm-5">Empresa contratada</dt><dd class="col-sm-7">{{ contract.empresa_contratada }}</dd>
+                    <dt class="col-sm-5">Local</dt><dd class="col-sm-7">{{ contract.local or '—' }}</dd>
+                    <dt class="col-sm-5">Data do contrato</dt><dd class="col-sm-7">{{ contract.data_contrato.strftime('%d/%m/%Y') if contract.data_contrato else '—' }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header fw-semibold">Contratada / Prestadora</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">CNPJ</dt><dd class="col-sm-7">{{ form_data.cnpj_contratada }}</dd>
+                    <dt class="col-sm-5">Endereço</dt><dd class="col-sm-7">{{ form_data.endereco_contratado }}</dd>
+                    <dt class="col-sm-5">Responsável</dt><dd class="col-sm-7">{{ form_data.nome_contratado }}</dd>
+                    <dt class="col-sm-5">CPF</dt><dd class="col-sm-7">{{ form_data.cpf_contratado }}</dd>
+                    <dt class="col-sm-5">CRC</dt><dd class="col-sm-7">{{ form_data.crc_contratado }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header fw-semibold">Contratantes</div>
+    <div class="card-body table-responsive">
+        <table class="table table-sm">
+            <thead><tr><th>Razão social</th><th>CNPJ</th><th>Enquadramento</th><th>Valor</th><th>Representante</th><th>CPF</th></tr></thead>
+            <tbody>
+                {% for c in form_data.contratantes %}
+                <tr>
+                    <td>{{ c.razao_social }}</td>
+                    <td>{{ c.cnpj }}</td>
+                    <td>{{ c.enquadramento_tributario }}</td>
+                    <td>{{ c.valor_mensal }}</td>
+                    <td>{{ c.nome }}</td>
+                    <td>{{ c.cpf }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header fw-semibold">Logs de geração</div>
+    <div class="card-body">
+        {% if logs %}
+        <ul class="list-group list-group-flush">
+            {% for log in logs %}
+            <li class="list-group-item px-0">
+                <div class="d-flex justify-content-between">
+                    <strong>{{ log.action }}</strong>
+                    <small class="text-muted">{{ log.created_at.strftime('%d/%m/%Y %H:%M:%S') if log.created_at else '' }}</small>
+                </div>
+                <div>{{ log.message }}</div>
+                {% if log.details %}
+                <pre class="small text-muted mb-0 mt-1">{{ log.details | tojson(indent=2) }}</pre>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted mb-0">Nenhum log registrado.</p>
+        {% endif %}
+    </div>
+</div>
+
+<details class="mt-4">
+    <summary class="fw-semibold">Dados completos do formulário (JSON)</summary>
+    <pre class="bg-light p-3 mt-2 rounded">{{ form_data | tojson(indent=2) }}</pre>
+</details>
+
+<a href="{{ url_for('contracts.list_contracts') }}" class="btn btn-outline-secondary mt-3">Voltar à listagem</a>
+{% endblock %}

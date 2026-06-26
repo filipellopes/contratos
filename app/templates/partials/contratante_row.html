@@ -1,0 +1,38 @@
+<div class="contratante-row card mb-3" data-index="{{ index }}">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">Contratante <span class="contratante-num">{{ index + 1 }}</span></span>
+        <button type="button" class="btn btn-sm btn-outline-danger btn-remove-contratante" {% if index == 0 %}disabled{% endif %}>Remover</button>
+    </div>
+    <div class="card-body row g-3">
+        <div class="col-md-4">
+            <label class="form-label">CNPJ</label>
+            <input type="text" class="form-control mask-cnpj" name="contratantes[{{ index }}][cnpj]" value="{{ c.cnpj if c else '' }}" required>
+            {% if errors.get('contratantes[' ~ index ~ '].cnpj') %}<div class="text-danger small">{{ errors['contratantes[' ~ index ~ '].cnpj'] }}</div>{% endif %}
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Enquadramento tributário</label>
+            <select class="form-select" name="contratantes[{{ index }}][enquadramento_tributario]" required>
+                <option value="">Selecione...</option>
+                {% for opt in dropdown_options['enquadramento_tributario'] %}
+                <option value="{{ opt.option_value }}" {% if c and c.enquadramento_tributario == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Razão social</label>
+            <input type="text" class="form-control" name="contratantes[{{ index }}][razao_social]" value="{{ c.razao_social if c else '' }}" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Valor mensal</label>
+            <input type="text" class="form-control mask-currency contratante-valor" name="contratantes[{{ index }}][valor_mensal]" value="{{ c.valor_mensal if c else '' }}" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Nome (pessoa física)</label>
+            <input type="text" class="form-control" name="contratantes[{{ index }}][nome]" value="{{ c.nome if c else '' }}" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">CPF</label>
+            <input type="text" class="form-control mask-cpf" name="contratantes[{{ index }}][cpf]" value="{{ c.cpf if c else '' }}" required>
+        </div>
+    </div>
+</div>

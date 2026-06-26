@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{% if option %}Editar opção{% else %}Nova opção{% endif %} — Valore{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4">{% if option %}Editar opção{% else %}Nova opção{% endif %}</h1>
+
+<form method="post" class="card">
+    <div class="card-body row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Campo</label>
+            <select class="form-select" name="field_name" required>
+                <option value="">Selecione...</option>
+                {% for field in dropdown_fields %}
+                <option value="{{ field }}" {% if option and option.field_name == field %}selected{% endif %}>{{ FIELD_NAMES[field] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Ordem de exibição</label>
+            <input type="number" class="form-control" name="sort_order" value="{{ option.sort_order if option else 0 }}">
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Nome exibido na lista</label>
+            <input type="text" class="form-control" name="option_label" value="{{ option.option_label if option else '' }}" required>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Valor interno</label>
+            <input type="text" class="form-control" name="option_value" value="{{ option.option_value if option else '' }}" required>
+        </div>
+        <div class="col-12">
+            <label class="form-label">Texto completo para o contrato</label>
+            <textarea class="form-control" name="full_text" rows="6">{{ option.full_text if option else '' }}</textarea>
+            <div class="form-text">Texto inserido na cláusula correspondente, quando aplicável.</div>
+        </div>
+        <div class="col-12">
+            <label class="form-label">Dados extras (JSON)</label>
+            <textarea class="form-control font-monospace" name="extra_data_json" rows="3">{{ option.extra_data_json if option else '{}' }}</textarea>
+            <div class="form-text">Ex.: {"exibir_clausula": true} para 13ª parcela.</div>
+        </div>
+        <div class="col-12">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {% if not option or option.is_active %}checked{% endif %}>
+                <label class="form-check-label" for="is_active">Opção ativa</label>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="{{ url_for('options.list_options') }}" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

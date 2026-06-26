@@ -1,0 +1,13 @@
+instance/
+__pycache__/
+*.py[cod]
+.env
+.venv/
+venv/
+app/generated_contracts/docx/*
+app/generated_contracts/pdf/*
+!app/generated_contracts/docx/.gitkeep
+!app/generated_contracts/pdf/.gitkeep
+_docx_analysis.txt
+_docx_tables.txt
+*.tmp.docx
