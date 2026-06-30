@@ -2,6 +2,8 @@
 
 Guia para publicar o **Valore Contratos** com URL pública acessível do celular.
 
+> **Trial expirou?** O Railway passa a exigir plano Hobby (~US$ 5/mês). Para uso gratuito, veja **[RENDER.md](RENDER.md)**.
+
 ## Pré-requisitos
 
 - Conta em [railway.com](https://railway.com)
