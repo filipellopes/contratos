@@ -29,6 +29,11 @@
     white-space: pre-wrap;
 }
 
+.contract-preview .clause-num {
+    font-weight: 700;
+    color: #2E6DA4;
+}
+
 @media print {
     .sidebar,
     .sidebar-overlay,

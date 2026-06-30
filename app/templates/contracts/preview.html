@@ -18,7 +18,7 @@
         <h2 class="mb-0">VALORE</h2>
         <p class="mb-0">Consultores Associados</p>
         <h3 class="mt-2">Contrato de Assessoria Contábil</h3>
-        <p class="text-muted">CPSA-VCA-2026</p>
+        <p class="text-muted">CPSA-2026</p>
     </header>
 
     <section class="mb-4">
@@ -73,35 +73,69 @@
 
     <section class="mb-3">
         <h5>2. SERVIÇOS</h5>
-        <p>2.1  A CONTRATANTE declara estar enquadrada sob o regime tributário: {{ context.texto_regime_tributario }}.</p>
-        <div class="clause-text">{{ context.texto_detalhamento_servico | replace('\n', '<br>') | safe }}</div>
+        <p><span class="clause-num">2.1</span>  A CONTRATANTE declara estar enquadrada sob o regime tributário: {{ context.texto_regime_tributario }}.</p>
+        <div class="clause-text"><span class="clause-num">2.2</span>  {{ context.texto_detalhamento_servico | replace('\n', '<br>') | safe }}</div>
+        <p>2.3  Serviços extraordinários — não incluídos no escopo acima — poderão ser contratados separadamente, mediante orçamento prévio aprovado pela CONTRATANTE, por e-mail. São exemplos: processos paralegais (alteração contratual, abertura de filiais, inscrição estadual em outra UF); obtenção de certidões negativas (INSS, FGTS, ICMS, ISS) mais de uma vez por mês; certidão negativa de falências ou protestos; emissão de Notas Fiscais em nome da CONTRATANTE; preenchimento de fichas cadastrais / IBGE; reemissão de guias de impostos mais de uma vez por mês; diligências presenciais em órgãos públicos; cálculo, emissão e recebimento de RPA; simulação de preço de produtos e serviços; simulação tributária para o Lucro Real; atendimento de malhas fiscais de períodos anteriores à vigência do contrato.</p>
+        <p>2.4  O escopo dos serviços restringe-se ao expressamente previsto na Cláusula 2.2. Serviços não expressamente incluídos consideram-se extraordinários, ainda que conexos ou habituais no mercado, dependendo de orçamento prévio aprovado. A lista da Cláusula 2.3 é exemplificativa, não exaustiva.</p>
     </section>
 
     <section class="mb-3">
         <h5>3. VIGÊNCIA</h5>
-        <p>{{ context.texto_vigencia_clausula }}</p>
-        <p>3.2  A rescisão sem o aviso previsto na Cláusula 3.1 implica multa de 2 (duas) parcelas mensais pelo valor vigente à época.</p>
-        <p>3.3  Qualquer das Partes poderá rescindir este Contrato de imediato, sem aviso prévio e sem a multa da Cláusula 3.2, em caso de inadimplência superior a 90 dias, fraude ou descumprimento grave.</p>
+        <p><span class="clause-num">3.1</span>  {{ context.texto_vigencia_clausula }}</p>
+        <p><span class="clause-num">3.2</span>  A rescisão sem o aviso previsto na Cláusula 3.1 implica multa de 2 (duas) parcelas mensais pelo valor vigente à época.</p>
+        <p><span class="clause-num">3.3</span>  Qualquer das Partes poderá rescindir este Contrato de imediato, sem aviso prévio e sem a multa da Cláusula 3.2, em caso de: (i) inadimplência superior a 90 (noventa) dias; (ii) fraude, falsidade documental ou recusa da CONTRATANTE em regularizar operações em desacordo com a lei; (iii) descumprimento grave de obrigação contratual não sanado em 15 (quinze) dias após notificação escrita.</p>
     </section>
 
     <section class="mb-3">
         <h5>4. VALORES E PAGAMENTO</h5>
-        <p>{{ context.texto_clausula_4_1 }}</p>
-        <p>{{ context.texto_clausula_4_2 }}</p>
+        <p><span class="clause-num">4.1</span>  {{ context.texto_clausula_4_1 }}</p>
+        <p><span class="clause-num">4.2</span>  {{ context.texto_clausula_4_2 }}</p>
+        <p><span class="clause-num">4.3</span>  A inatividade da CONTRATANTE não rescinde o Contrato nem suspende a obrigação de pagamento, pois a CONTRATADA mantém obrigações perante órgãos públicos. Para encerrar os serviços, aplica-se o disposto na Cláusula 3.</p>
+        <p><span class="clause-num">4.4</span>  Despesas antecipadas (taxas, correios, materiais) serão reembolsadas pela CONTRATANTE em até 2 dias úteis, mediante comprovante e aprovação prévia.</p>
+        <p><span class="clause-num">4.5</span>  Pagamentos em atraso: multa de 2% + juros de 0,033% por dia.</p>
         {% if context.exibir_clausula_decima_terceira %}
-        <p>{{ context.texto_decima_terceira_parcela }}</p>
+        <p><span class="clause-num">4.6</span>  {{ context.texto_decima_terceira_parcela }}</p>
         {% endif %}
-        <p>4.8  Uma parcela no valor da cláusula 3.1 é prevista na assinatura do contrato para implementação do projeto.</p>
+        <p><span class="clause-num">4.7</span>  Revisão extraordinária de honorários poderá ocorrer em comum acordo, se houver aumento comprovado do escopo (ver Anexo I).</p>
+        <p><span class="clause-num">4.8</span>  Uma parcela no valor da cláusula 3.1 é prevista na assinatura do contrato para implementação do projeto, englobando revisão fiscal inicial, análise dos demonstrativos contábeis recebidos, reunião de início de trabalho e apresentação/treinamento inicial com o time financeiro.</p>
+    </section>
+
+    <section class="mb-3">
+        <h5>5. OBRIGAÇÕES DA CONTRATADA</h5>
+        <p><span class="clause-num">5.1</span>  Prestar os serviços da Cláusula 2 com zelo e diligência.</p>
+        <p><span class="clause-num">5.2</span>  Responder em até 16 horas úteis (2 dias úteis) a demandas fora do prazo normal ou não recorrentes. Em casos de inadimplência com pagamento urgente, o prazo será minimizado.</p>
+        <p><span class="clause-num">5.3</span>  Manter sigilo absoluto de todas as informações financeiras, contábeis, fiscais e estratégicas da CONTRATANTE.</p>
+        <p><span class="clause-num">5.4</span>  Os prazos da CONTRATADA ficam suspensos durante indisponibilidade, instabilidade ou atraso dos sistemas públicos necessários à execução dos serviços (SEFAZ, e-CAC, portais municipais, ambiente nacional da NFS-e e congêneres), retomando-se pelo saldo remanescente quando restabelecidos, sem caracterizar inadimplemento.</p>
     </section>
 
     <section class="mb-3">
         <h5>6. OBRIGAÇÕES DA CONTRATANTE</h5>
-        <p>{{ context.texto_suspensao }}</p>
+        <p><span class="clause-num">6.1</span>  Coletar documentos do contador anterior e encaminhá-los à CONTRATADA em até 60 dias da assinatura.</p>
+        <p><span class="clause-num">6.2</span>  Enviar mensalmente, até o 3º dia útil de cada mês, os documentos fiscais-contábeis pela ferramenta Onvio (ou e-mail), incluindo: listagem das notas fiscais emitidas e tomadas; extratos bancários de todas as contas (Excel e OFX); conciliação bancária; composição dos saldos de Contas a Receber e a Pagar.</p>
+        <p><span class="clause-num">6.3</span>  Fornecer acesso consultivo ao sistema da Prefeitura, Secretaria da Fazenda e Receita Federal.</p>
+        <p><span class="clause-num">6.4</span>  Responsabilizar-se pelo correto arquivamento de documentos, notas fiscais e comprovantes.</p>
+        <p><span class="clause-num">6.5</span>  Informar mensalmente pagamentos recebidos, impostos pagos e notas emitidas.</p>
+        <p><span class="clause-num">6.6</span>  Fornecer Carta de Responsabilidade da Administração ao final de cada exercício social.</p>
+        <p><span class="clause-num">6.7</span>  Adquirir certificado digital A1 (CNPJ), caso não possua.</p>
+        <p><span class="clause-num">6.8</span>  Em caso de pendências anteriores ao início do Contrato, a CONTRATADA poderá cobrar valores adicionais, mediante orçamento prévio aprovado.</p>
+        <p><span class="clause-num">6.9</span>  {{ context.texto_suspensao }}</p>
+        <p><span class="clause-num">6.10</span>  Caso informações, documentos ou classificações fornecidos pela CONTRATANTE se revelem incorretos ou incompletos, ou sejam alterados após o processamento, o reprocessamento constitui serviço extraordinário, nos termos da Cláusula 2.3, orçado previamente com base no mínimo de 30% do honorário mensal vigente por competência reaberta.</p>
+        <p><span class="clause-num">6.11</span>  A obrigação da Cláusula 6.2 é mensal e vinculada a cada competência. A entrega concentrada de 2 (duas) ou mais competências gera honorário adicional de 40% do honorário mensal vigente por competência em atraso.</p>
+        <p><span class="clause-num">6.12</span>  Multas, juros e penalidades impostos por órgãos públicos em razão de atraso, omissão, incompletude ou inexatidão de documentos e informações de responsabilidade da CONTRATANTE são de sua responsabilidade exclusiva.</p>
+    </section>
+
+    <section class="mb-3">
+        <h5>7. RESPONSABILIDADES DA CONTRATANTE</h5>
+        <p><span class="clause-num">7.1</span>  O representante legal declara que todas as informações fornecidas são fidedignas e que a empresa está devidamente registrada e opera dentro de seu objeto social.</p>
+        <p><span class="clause-num">7.2</span>  A CONTRATANTE não realizou nem realizará operações ilegais que devam impactar as demonstrações contábeis.</p>
+        <p><span class="clause-num">7.3</span>  Em rescisão contratual, os documentos e livros contábeis somente serão entregues a novo profissional após cumprimento dos Termos de Transferência de Responsabilidade Técnica (art. 7º do Código de Ética do Contador).</p>
+        <p><span class="clause-num">7.4</span>  Multas por atraso em declarações causadas por omissão da CONTRATADA são de responsabilidade desta — exceto se houver parcelas em aberto ou atraso na entrega de documentos pela CONTRATANTE.</p>
+        <p><span class="clause-num">7.5</span>  Não contratar profissionais da CONTRATADA durante a vigência e por 2 anos após o encerramento, sob pena de multa equivalente a 70% do salário bruto do profissional nos primeiros 12 meses de contratação.</p>
     </section>
 
     <section class="mb-3">
         <h5>8. FORO</h5>
-        <p>{{ context.texto_clausula_8_1 }}</p>
+        <p><span class="clause-num">8.1</span>  {{ context.texto_clausula_8_1 }}</p>
     </section>
 
     <section class="mb-4">
@@ -116,6 +150,17 @@
                 <pre class="mb-0 contract-preview" style="white-space: pre-wrap; font-family: inherit; background: transparent; border: none; padding: 0;">{{ context.bloco_assinatura_contratada }}</pre>
             </div>
         </div>
+    </section>
+
+    <section class="mb-4">
+        <h5>ANEXO I — PARÂMETROS DE REAJUSTE DE HONORÁRIOS</h5>
+        <ol>
+            <li>Quantidade de funcionários (novas filiais ou aumento significativo);</li>
+            <li>Volume de notas fiscais por mês (entradas, saídas e serviços);</li>
+            <li>Quantidade de lançamentos contábeis mensais;</li>
+            <li>Aumento de faturamento (incremento de responsabilidade tributária);</li>
+            <li>Mudança de endereço para outro município ou UF (nova compliance fiscal).</li>
+        </ol>
     </section>
 </article>
 

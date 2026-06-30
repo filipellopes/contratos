@@ -1,3 +1,5 @@
+import re
+
 from app.models.contract_option import ContractOption
 from app.models.contracted_company import ContractedCompany
 from app.services.formatters import (
@@ -72,30 +74,31 @@ _SUSPENSAO_FALLBACKS = {
 }
 
 
-def _ensure_clausula_numero(text, numero):
+_CLAUSULA_NUM_RE = re.compile(r"^\d+(?:\.\d+)?\s+")
+
+
+def _strip_clausula_numero(text):
+    """Remove um número de cláusula inicial (ex.: '6.9  ') de um texto.
+
+    O número da cláusula é renderizado como uma run separada (negrito/azul) no
+    template Word — o texto dinâmico injetado aqui deve conter só o corpo.
+    """
     text = (text or "").strip()
-    if not text:
-        return ""
-    prefix = f"{numero}  "
-    if text.startswith(prefix):
-        return text
-    if text.startswith(f"{numero} "):
-        return prefix + text[len(numero) :].lstrip()
-    return prefix + text
+    return _CLAUSULA_NUM_RE.sub("", text, count=1)
 
 
 def _build_texto_suspensao(suspensao_option, suspensao_raw=""):
     if suspensao_option and suspensao_option.full_text:
-        return _ensure_clausula_numero(suspensao_option.full_text.strip(), "6.9")
+        return _strip_clausula_numero(suspensao_option.full_text)
     if suspensao_option:
         fallback = _SUSPENSAO_FALLBACKS.get(suspensao_option.option_value)
         if fallback:
-            return fallback
-        return _ensure_clausula_numero(suspensao_option.option_label, "6.9")
+            return _strip_clausula_numero(fallback)
+        return suspensao_option.option_label
     fallback = _SUSPENSAO_FALLBACKS.get(suspensao_raw, "")
     if fallback:
-        return fallback
-    return _ensure_clausula_numero(suspensao_raw, "6.9")
+        return _strip_clausula_numero(fallback)
+    return suspensao_raw
 
 
 def _build_texto_partes(contratantes, contratada):
@@ -184,10 +187,10 @@ def build_contract_context(form_data):
 
     texto_decima_terceira = ""
     if decima_terceira and decima_terceira.full_text:
-        texto_decima_terceira = decima_terceira.full_text
+        texto_decima_terceira = _strip_clausula_numero(decima_terceira.full_text)
     elif exibir_clausula:
         texto_decima_terceira = (
-            "4.6  Adicionalmente, será paga uma parcela extra referente ao encerramento "
+            "Adicionalmente, será paga uma parcela extra referente ao encerramento "
             "das demonstrações contábeis anuais, Declaração de Rendimentos da Pessoa Jurídica, "
             "Declaração de Movimento Fiscal Estadual (inventário anual), transmissão da "
             "Escrituração Contábil Digital (ECD), transmissão da Escrituração Contábil Fiscal (ECF) "
@@ -213,24 +216,30 @@ def build_contract_context(form_data):
         "contratantes": contratantes,
         "texto_partes": _build_texto_partes(contratantes, contratada),
         "texto_regime_tributario": join_enquadramentos(enquadramentos),
-        "texto_detalhamento_servico": detalhamento.full_text if detalhamento and detalhamento.full_text else "",
+        "texto_detalhamento_servico": (
+            _strip_clausula_numero(detalhamento.full_text) if detalhamento and detalhamento.full_text else ""
+        ),
         "texto_vigencia_clausula": (
-            f"3.1  Este Contrato entra em vigor em {format_date(inicio_vigencia)} e tem duração de "
+            f"Este Contrato entra em vigor em {format_date(inicio_vigencia)} e tem duração de "
             f"12 (doze) meses, renovando-se automaticamente por períodos iguais. {texto_rescisao} "
             f"Todos os pagamentos vencidos até a rescisão efetiva permanecem devidos."
         ),
         "texto_rescisao": texto_rescisao,
         "valor_mensal_total_formatado": format_currency(total),
         "texto_clausula_4_1": (
-            f"4.1  Os honorários mensais são de {format_currency(total)}. "
+            f"Os honorários mensais são de {format_currency(total)}. "
             f"O pagamento deve ser feito {texto_forma}, {texto_vencimento_clausula}."
         ),
-        "texto_clausula_4_2": reajuste.full_text if reajuste and reajuste.full_text else f"4.2  {reajuste.option_label if reajuste else ''}",
+        "texto_clausula_4_2": (
+            _strip_clausula_numero(reajuste.full_text)
+            if reajuste and reajuste.full_text
+            else (reajuste.option_label if reajuste else "")
+        ),
         "exibir_clausula_decima_terceira": exibir_clausula,
         "texto_decima_terceira_parcela": texto_decima_terceira,
         "texto_suspensao": _build_texto_suspensao(suspensao, form_data.get("suspensao", "")),
         "texto_clausula_8_1": (
-            f"8.1  Fica eleito o foro da Comarca de {foro.option_label if foro else local} "
+            f"Fica eleito o foro da Comarca de {foro.option_label if foro else local} "
             f"para dirimir quaisquer litígios decorrentes deste Contrato."
         ),
         **contratada,

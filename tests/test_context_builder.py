@@ -88,19 +88,20 @@ def test_clausula_4_1_dia_vencimento_alterado(app_ctx):
 def test_clausula_6_9_suspensao_duas_parcelas(app_ctx):
     context = build_contract_context(_base_form_data(suspensao="inadimplencia_2"))
 
-    assert "6.9  A inadimplência de 2 ou mais parcelas" in context["texto_suspensao"]
+    assert "A inadimplência de 2 ou mais parcelas" in context["texto_suspensao"]
+    assert not context["texto_suspensao"].startswith("6.9")
     assert context["label_suspensao"] == "Inadimplência 2 ou + Parcelas"
 
 
 def test_clausula_6_9_suspensao_uma_parcela(app_ctx):
     context = build_contract_context(_base_form_data(suspensao="inadimplencia_1"))
 
-    assert "6.9  A inadimplência de 1 (uma) parcela" in context["texto_suspensao"]
+    assert "A inadimplência de 1 (uma) parcela" in context["texto_suspensao"]
     assert context["label_suspensao"] == "Inadimplência 1 parcela"
 
 
 def test_clausula_6_9_suspensao_90_dias(app_ctx):
     context = build_contract_context(_base_form_data(suspensao="inadimplencia_90d"))
 
-    assert "6.9  A inadimplência superior a 90 (noventa) dias" in context["texto_suspensao"]
+    assert "A inadimplência superior a 90 (noventa) dias" in context["texto_suspensao"]
     assert context["label_suspensao"] == "Inadimplência 90 dias"

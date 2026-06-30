@@ -11,10 +11,10 @@ a) Assessoria Contábil:
 Classificação da contabilidade de acordo com normas e princípios contábeis vigentes; emissão dos balancetes em periodicidade trimestral; elaboração de balanço anual e demais demonstrações contábeis obrigatórias ("Serviços Contábeis").
 
 b) Assessoria Fiscal:
-Orientação e controle da aplicação dos dispositivos legais vigentes; escrituração dos registros fiscais; cálculo e emissão das guias de impostos; transmissão das obrigações acessórias ("Serviços Fiscais").
+Orientação e controle da aplicação dos dispositivos legais vigentes, sejam federais, estaduais ou municipais; escrituração dos registros fiscais de todos os livros obrigatórios perante o governo federal, estadual e municipal; cálculo e emissão das guias de impostos, pró labore, transmissão das obrigações acessórias como, por exemplo, DeSTDA, DEFIS e demais obrigatórias por lei para o enquadramento do Simples Nacional; DCTF, EFD Contribuições, EFD ICMS/IPI, ECF, ECD e demais transmissões para o enquadramento no Lucro Presumido, Lucro Real ou Outras; transmissão e homologação dos livros contábeis e fiscais na Junta Comercial; e atendimento das demais exigências previstas na legislação brasileira ("Serviços Fiscais").
 
 c) Assessoria Trabalhista:
-Orientação e controle da CLT e encargos; processamento de folha de pagamento; cálculo e recolhimento de FGTS e INSS ("Serviços Trabalhistas")."""
+Orientação e controle da aplicação dos preceitos da Consolidação das Leis do Trabalho, bem como aqueles atinentes à Previdência Social, PIS, FGTS e outros aplicáveis às relações de emprego mantidas pela CONTRATANTE; elaboração de contratos de experiência de empregados; orientação da comunicação ao sindicato de admissão e demissão de empregados; processamento de folha de pagamento e recibo de pagamento; cálculo e recolhimento de FGTS e INSS; elaboração de documentos para homologação de rescisões trabalhistas; elaboração de recibo de férias; emissão de Guia de Contribuição Sindical de Empregado; emissão de comprovante de rendimento de empregado e empregador ("Serviços Trabalhistas")."""
 
 
 def seed_options():
