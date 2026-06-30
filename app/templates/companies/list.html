@@ -1,45 +1,67 @@
 {% extends "base.html" %}
 {% block title %}Empresas contratadas — Valore{% endblock %}
+{% block topbar_title %}Empresas contratadas{% endblock %}
+{% block topbar_subtitle %}Cadastro de empresas prestadoras de serviço{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('companies.create_company') }}" class="btn btn-primary">
+    <i class="bi bi-plus-lg"></i> Nova empresa
+</a>
+{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0">Empresas contratadas</h1>
-    <a href="{{ url_for('companies.create_company') }}" class="btn btn-primary">Nova empresa</a>
-</div>
-
-<div class="table-responsive">
-    <table class="table table-hover align-middle">
-        <thead class="table-light">
-            <tr>
-                <th>Nome</th>
-                <th>CNPJ</th>
-                <th>Responsável</th>
-                <th>CRC</th>
-                <th>Ativa</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for company in companies %}
-            <tr class="{% if not company.is_active %}table-secondary{% endif %}">
-                <td>{{ company.company_name }}</td>
-                <td>{{ company.cnpj }}</td>
-                <td>{{ company.responsible_name or '—' }}</td>
-                <td>{{ company.crc or '—' }}</td>
-                <td>{% if company.is_active %}Sim{% else %}Não{% endif %}</td>
-                <td class="text-nowrap">
-                    <a href="{{ url_for('companies.edit_company', company_id=company.id) }}" class="btn btn-sm btn-outline-primary">Editar</a>
-                    {% if company.is_active %}
-                    <form method="post" action="{{ url_for('companies.deactivate_company', company_id=company.id) }}" class="d-inline">
-                        <button type="submit" class="btn btn-sm btn-outline-warning">Desativar</button>
-                    </form>
-                    {% endif %}
-                </td>
-            </tr>
-            {% else %}
-            <tr><td colspan="6" class="text-center text-muted py-4">Nenhuma empresa cadastrada.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="table-wrap">
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>CNPJ</th>
+                    <th>Responsável</th>
+                    <th>CRC</th>
+                    <th>Ativa</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for company in companies %}
+                <tr class="{% if not company.is_active %}row-inactive{% endif %}">
+                    <td class="fw-medium">{{ company.company_name }}</td>
+                    <td><code>{{ company.cnpj }}</code></td>
+                    <td>{{ company.responsible_name or '—' }}</td>
+                    <td>{{ company.crc or '—' }}</td>
+                    <td>
+                        {% if company.is_active %}
+                        <span class="badge badge-success">Ativa</span>
+                        {% else %}
+                        <span class="badge badge-secondary">Inativa</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="gap-actions">
+                            <a href="{{ url_for('companies.edit_company', company_id=company.id) }}" class="btn btn-sm btn-outline-primary" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            {% if company.is_active %}
+                            <form method="post" action="{{ url_for('companies.deactivate_company', company_id=company.id) }}" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-warning" title="Desativar">
+                                    <i class="bi bi-pause-circle"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="empty-state">
+                        <i class="bi bi-building"></i>
+                        Nenhuma empresa cadastrada.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

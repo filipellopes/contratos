@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% block title %}{% if company %}Editar empresa{% else %}Nova empresa{% endif %} — Valore{% endblock %}
+{% block topbar_title %}{% if company %}Editar empresa{% else %}Nova empresa{% endif %}{% endblock %}
+{% block topbar_subtitle %}Dados da empresa prestadora de serviço{% endblock %}
 
 {% block content %}
-<h1 class="h3 mb-4">{% if company %}Editar empresa{% else %}Nova empresa{% endif %}</h1>
-
 <form method="post" class="card">
+    <div class="card-header">
+        <span class="card-header-icon"><i class="bi bi-building"></i> Dados da empresa</span>
+    </div>
     <div class="card-body row g-3">
         <div class="col-md-8">
             <label class="form-label">Nome da empresa</label>
@@ -37,8 +40,10 @@
             </div>
         </div>
     </div>
-    <div class="card-footer d-flex gap-2">
-        <button type="submit" class="btn btn-primary">Salvar</button>
+    <div class="card-footer action-bar">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg"></i> Salvar
+        </button>
         <a href="{{ url_for('companies.list_companies') }}" class="btn btn-outline-secondary">Cancelar</a>
     </div>
 </form>

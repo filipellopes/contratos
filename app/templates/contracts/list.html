@@ -1,56 +1,75 @@
 {% extends "base.html" %}
 {% block title %}Contratos gerados — Valore{% endblock %}
+{% block topbar_title %}Contratos gerados{% endblock %}
+{% block topbar_subtitle %}Histórico de contratos gerados pelo sistema{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('contracts.new_contract') }}" class="btn btn-primary">
+    <i class="bi bi-plus-lg"></i> Novo contrato
+</a>
+{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0">Contratos gerados</h1>
-    <a href="{{ url_for('contracts.new_contract') }}" class="btn btn-primary">Novo contrato</a>
-</div>
-
-<div class="table-responsive">
-    <table class="table table-hover align-middle">
-        <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>Data/Hora</th>
-                <th>Razão social</th>
-                <th>CNPJ</th>
-                <th>Tipo de serviço</th>
-                <th>Valor mensal</th>
-                <th>Gerado por</th>
-                <th>Status</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for contract in contracts %}
-            <tr>
-                <td>{{ contract.id }}</td>
-                <td>{{ contract.created_at.strftime('%d/%m/%Y %H:%M') if contract.created_at else '—' }}</td>
-                <td>{{ contract.contratante_razao_social }}</td>
-                <td>{{ contract.contratante_cnpj | format_cnpj }}</td>
-                <td>{{ contract.tipo_servico }}</td>
-                <td>{{ contract.valor_mensal | format_currency }}</td>
-                <td>{{ contract.generated_by_name }}</td>
-                <td>
-                    <span class="badge {% if contract.status == 'gerado_com_sucesso' %}bg-success{% elif contract.status.startswith('erro') %}bg-danger{% else %}bg-secondary{% endif %}">
-                        {{ contract.status_label }}
-                    </span>
-                </td>
-                <td class="text-nowrap">
-                    {% if contract.docx_path %}
-                    <a href="{{ url_for('contracts.download_docx', contract_id=contract.id) }}" class="btn btn-sm btn-outline-primary">Word</a>
-                    {% endif %}
-                    {% if contract.pdf_path %}
-                    <a href="{{ url_for('contracts.download_pdf', contract_id=contract.id) }}" class="btn btn-sm btn-outline-danger">PDF</a>
-                    {% endif %}
-                    <a href="{{ url_for('contracts.contract_detail', contract_id=contract.id) }}" class="btn btn-sm btn-outline-secondary">Detalhes</a>
-                </td>
-            </tr>
-            {% else %}
-            <tr><td colspan="9" class="text-center text-muted py-4">Nenhum contrato gerado ainda.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="table-wrap">
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Data/Hora</th>
+                    <th>Razão social</th>
+                    <th>CNPJ</th>
+                    <th>Tipo de serviço</th>
+                    <th>Valor mensal</th>
+                    <th>Gerado por</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contract in contracts %}
+                <tr>
+                    <td><span class="text-secondary-custom">#{{ contract.id }}</span></td>
+                    <td>{{ contract.created_at.strftime('%d/%m/%Y %H:%M') if contract.created_at else '—' }}</td>
+                    <td class="fw-medium">{{ contract.contratante_razao_social }}</td>
+                    <td><code>{{ contract.contratante_cnpj | format_cnpj }}</code></td>
+                    <td>{{ contract.tipo_servico }}</td>
+                    <td class="fw-semibold">{{ contract.valor_mensal | format_currency }}</td>
+                    <td>{{ contract.generated_by_name }}</td>
+                    <td>
+                        <span class="badge {% if contract.status == 'gerado_com_sucesso' %}badge-success{% elif contract.status.startswith('erro') %}badge-danger{% else %}badge-secondary{% endif %}">
+                            {{ contract.status_label }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="gap-actions">
+                            {% if contract.docx_path %}
+                            <a href="{{ url_for('contracts.download_docx', contract_id=contract.id) }}" class="btn btn-sm btn-outline-primary" title="Baixar Word">
+                                <i class="bi bi-file-earmark-word"></i>
+                            </a>
+                            {% endif %}
+                            {% if contract.pdf_path %}
+                            <a href="{{ url_for('contracts.download_pdf', contract_id=contract.id) }}" class="btn btn-sm btn-outline-danger" title="Baixar PDF">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                            </a>
+                            {% endif %}
+                            <a href="{{ url_for('contracts.contract_detail', contract_id=contract.id) }}" class="btn btn-sm btn-outline-secondary" title="Detalhes">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" class="empty-state">
+                        <i class="bi bi-inbox"></i>
+                        Nenhum contrato gerado ainda.<br>
+                        <a href="{{ url_for('contracts.new_contract') }}" class="btn btn-primary btn-sm mt-3">Criar primeiro contrato</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}
