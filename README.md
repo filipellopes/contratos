@@ -85,6 +85,8 @@ Resumo:
 
 Acesse de qualquer dispositivo: `https://sua-url.up.railway.app/contratos`
 
+> **Trial do Railway expirou?** Use o deploy gratuito no Render — guia: **[RENDER.md](RENDER.md)**.
+
 ### Por que LibreOffice no servidor?
 
 Alternativas puramente Python (WeasyPrint, docx2pdf) **não preservam** tabelas, margens e estilos do Word. No Linux, o LibreOffice em modo headless é o padrão da indústria para conversão fiel — roda **no VPS**, não na sua máquina de desenvolvimento.

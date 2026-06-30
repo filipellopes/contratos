@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: valore-contratos
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: master
+    healthCheckPath: /contratos
+    envVars:
+      - key: FLASK_DEBUG
+        value: "0"
+      - key: PDF_CONVERSION
+        value: auto
+      - key: SECRET_KEY
+        generateValue: true
