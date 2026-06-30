@@ -72,6 +72,19 @@ python run.py
 
 Use **systemd** ou **gunicorn** para manter o processo rodando (ex.: `gunicorn -w 2 -b 0.0.0.0:5000 run:app`).
 
+### Opção C — Railway (URL pública, ideal para celular)
+
+Deploy em nuvem com domínio HTTPS automático. Guia completo: **[RAILWAY.md](RAILWAY.md)**.
+
+Resumo:
+
+1. [railway.com/new](https://railway.com/new) → conecte o repo GitHub
+2. Adicione **PostgreSQL** e referencie `DATABASE_URL`
+3. Defina `SECRET_KEY` e `FLASK_DEBUG=0`
+4. **Generate Domain** nas configurações de rede
+
+Acesse de qualquer dispositivo: `https://sua-url.up.railway.app/contratos`
+
 ### Por que LibreOffice no servidor?
 
 Alternativas puramente Python (WeasyPrint, docx2pdf) **não preservam** tabelas, margens e estilos do Word. No Linux, o LibreOffice em modo headless é o padrão da indústria para conversão fiel — roda **no VPS**, não na sua máquina de desenvolvimento.

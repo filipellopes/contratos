@@ -21,6 +21,11 @@ COPY . .
 
 RUN mkdir -p instance app/generated_contracts/docx app/generated_contracts/pdf
 
+ENV FLASK_DEBUG=0 \
+    PORT=5000
+
+RUN chmod +x scripts/start.sh
+
 EXPOSE 5000
 
-CMD ["sh", "-c", "python seed.py && python run.py"]
+CMD ["scripts/start.sh"]
