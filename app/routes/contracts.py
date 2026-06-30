@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 
 from flask import (
@@ -25,6 +26,52 @@ from app.services.formatters import only_digits, parse_currency, parse_date
 from app.services.pdf_converter import convert_docx_to_pdf
 
 contracts_bp = Blueprint("contracts", __name__)
+
+CONTRACT_FIELD_LABELS = {
+    "generated_by_name": "Nome de quem está gerando",
+    "tipo_servico": "Tipo de serviço",
+    "inicio_vigencia": "Início da vigência",
+    "forma_pagamento": "Forma de pagamento",
+    "dia_vencimento": "Dia do vencimento",
+    "mes_vencimento": "Mês do vencimento",
+    "reajuste": "Reajuste",
+    "decima_terceira_parcela": "13ª parcela",
+    "rescisao": "Rescisão",
+    "suspensao": "Suspensão",
+    "foro": "Foro",
+    "detalhamento_servico": "Detalhamento do serviço",
+    "contratantes": "Contratante(s)",
+    "empresa_contratada_id": "Empresa contratada",
+    "cnpj_contratada": "CNPJ contratada",
+    "endereco_contratado": "Endereço contratado",
+    "nome_contratado": "Nome contratado",
+    "cpf_contratado": "CPF contratado",
+    "crc_contratado": "CRC contratado",
+    "local": "Local",
+    "data_contrato": "Data do contrato",
+}
+
+CONTRATANTE_FIELD_LABELS = {
+    "cnpj": "CNPJ",
+    "enquadramento_tributario": "Enquadramento tributário",
+    "razao_social": "Razão social",
+    "valor_mensal": "Valor mensal",
+    "nome": "Nome (pessoa física)",
+    "cpf": "CPF",
+}
+
+
+def _error_label(key):
+    match = re.match(r"contratantes\[(\d+)\]\.(\w+)", key)
+    if match:
+        index = int(match.group(1)) + 1
+        field = CONTRATANTE_FIELD_LABELS.get(match.group(2), match.group(2))
+        return f"Contratante {index} — {field}"
+    return CONTRACT_FIELD_LABELS.get(key, key)
+
+
+def _build_error_summary(errors):
+    return [(_error_label(key), message) for key, message in errors.items()]
 
 
 def _parse_contratantes():
@@ -115,8 +162,8 @@ def list_contracts():
     return render_template("contracts/list.html", contracts=contracts)
 
 
-@contracts_bp.route("/contratos/novo", methods=["GET"])
-def new_contract():
+def _render_contract_form(form_data=None, errors=None):
+    errors = errors or {}
     companies = ContractedCompany.query.filter_by(is_active=True).order_by(
         ContractedCompany.company_name
     ).all()
@@ -124,9 +171,24 @@ def new_contract():
         "contracts/form.html",
         dropdown_options=_load_dropdown_options(),
         companies=companies,
-        form_data=None,
-        errors={},
+        form_data=form_data,
+        errors=errors,
+        error_summary=_build_error_summary(errors) if errors else [],
     )
+
+
+@contracts_bp.route("/contratos/novo", methods=["GET"])
+def new_contract():
+    return _render_contract_form()
+
+
+@contracts_bp.route("/contratos/editar", methods=["GET"])
+def edit_contract():
+    raw = session.get("pending_contract")
+    if not raw:
+        flash("Sessão expirada. Preencha o formulário novamente.", "warning")
+        return redirect(url_for("contracts.new_contract"))
+    return _render_contract_form(form_data=json.loads(raw))
 
 
 @contracts_bp.route("/contratos/preview", methods=["POST"])
@@ -139,17 +201,7 @@ def preview_contract():
         session["pending_context"] = json.dumps(context, default=str, ensure_ascii=False)
         return render_template("contracts/preview.html", context=context, form_data=form_data)
     except ValidationError as exc:
-        companies = ContractedCompany.query.filter_by(is_active=True).order_by(
-            ContractedCompany.company_name
-        ).all()
-        flash("Corrija os erros indicados no formulário.", "danger")
-        return render_template(
-            "contracts/form.html",
-            dropdown_options=_load_dropdown_options(),
-            companies=companies,
-            form_data=form_data,
-            errors=exc.errors,
-        )
+        return _render_contract_form(form_data=form_data, errors=exc.errors)
 
 
 @contracts_bp.route("/contratos/gerar", methods=["POST"])

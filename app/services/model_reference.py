@@ -34,10 +34,10 @@ WORD_VARIABLES = [
     },
     {
         "variable": "texto_forma_pagamento",
-        "section": "Tabela resumo / Cláusula 4.1",
+        "section": "Tabela resumo",
         "where": "Linha «Pagamento»",
-        "source": "Opção forma_pagamento → full_text (ou dia + mês do formulário)",
-        "option_field": "forma_pagamento",
+        "source": "dia_vencimento + opção mes_vencimento → full_text (ex.: «25 de cada mês»)",
+        "option_field": "mes_vencimento",
     },
     {
         "variable": "texto_reajuste",
@@ -134,7 +134,7 @@ WORD_VARIABLES = [
         "variable": "texto_clausula_4_1",
         "section": "Cláusula 4.1",
         "where": "Honorários mensais totais",
-        "source": "Soma dos valores + forma de pagamento",
+        "source": "Soma dos valores + forma_pagamento.full_text + vencimento (dia + mes_vencimento)",
         "option_field": "forma_pagamento",
     },
     {
@@ -235,14 +235,14 @@ OPTION_FIELD_GUIDE = [
         "field_name": "forma_pagamento",
         "form_block": "Bloco 1",
         "valor_interno_hint": "boleto, pix",
-        "full_text_use": "Cláusula 4.1 e linha Pagamento do resumo (ex.: «via boleto bancário»)",
+        "full_text_use": "Cláusula 4.1 — frase «O pagamento deve ser feito …» (ex.: «via boleto bancário»)",
         "extra_data_use": "—",
     },
     {
         "field_name": "mes_vencimento",
         "form_block": "Bloco 1",
-        "valor_interno_hint": "dia_fixo",
-        "full_text_use": "Combinado com dia_vencimento se forma_pagamento não tiver full_text",
+        "valor_interno_hint": "dia_fixo, mes_corrente, mes_subsequente",
+        "full_text_use": "Sufixo do vencimento combinado com dia_vencimento (ex.: «de cada mês», «do mês corrente»). Resumo usa «{dia} {sufixo}»; cláusula 4.1 usa «vencimento dia {dia} {sufixo}»",
         "extra_data_use": "—",
     },
     {
@@ -269,8 +269,8 @@ OPTION_FIELD_GUIDE = [
     {
         "field_name": "suspensao",
         "form_block": "Bloco 1",
-        "valor_interno_hint": "inadimplencia_2",
-        "full_text_use": "Cláusula 6.9 (parágrafo completo)",
+        "valor_interno_hint": "inadimplencia_1, inadimplencia_2, inadimplencia_90d",
+        "full_text_use": "Cláusula 6.9 (parágrafo completo). Resumo usa option_label",
         "extra_data_use": "—",
     },
     {

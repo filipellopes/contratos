@@ -82,4 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     reindexContratantes();
+
+    const firstError = document.querySelector(".field-error, #validation-summary");
+    if (firstError) {
+        firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
 });

@@ -1,9 +1,21 @@
 {% extends "base.html" %}
+{% from "macros/form_errors.html" import field_error, invalid_class %}
 {% block title %}Novo contrato — Valore{% endblock %}
 {% block topbar_title %}Novo contrato{% endblock %}
 {% block topbar_subtitle %}Preencha os dados para gerar um contrato de assessoria contábil{% endblock %}
 
 {% block content %}
+{% if error_summary %}
+<div class="alert alert-danger" id="validation-summary" role="alert">
+    <div class="fw-semibold mb-2"><i class="bi bi-exclamation-triangle"></i> Corrija os campos abaixo:</div>
+    <ul class="mb-0 ps-3">
+        {% for label, message in error_summary %}
+        <li><strong>{{ label }}:</strong> {{ message }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
 <form method="post" action="{{ url_for('contracts.preview_contract') }}" id="contract-form" novalidate>
 
     <div class="card form-section">
@@ -13,8 +25,8 @@
         <div class="card-body">
             <div class="col-md-6">
                 <label class="form-label">Nome de quem está gerando *</label>
-                <input type="text" class="form-control" name="generated_by_name" value="{{ form_data.generated_by_name if form_data else '' }}" required placeholder="Seu nome completo">
-                {% if errors.get('generated_by_name') %}<div class="field-error">{{ errors.generated_by_name }}</div>{% endif %}
+                <input type="text" class="form-control{{ invalid_class(errors, 'generated_by_name') }}" name="generated_by_name" value="{{ form_data.generated_by_name if form_data else '' }}" required placeholder="Seu nome completo">
+                {{ field_error(errors, 'generated_by_name') }}
             </div>
         </div>
     </div>
@@ -28,83 +40,93 @@
         <div class="card-body row g-3">
             <div class="col-md-4">
                 <label class="form-label">Tipo de serviço</label>
-                <select class="form-select" name="tipo_servico" required>
+                <select class="form-select{{ invalid_class(errors, 'tipo_servico') }}" name="tipo_servico" required>
                     <option value="">Selecione...</option>
                     {% for opt in dropdown_options.tipo_servico %}
                     <option value="{{ opt.option_value }}" {% if form_data and form_data.tipo_servico == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
                     {% endfor %}
                 </select>
+                {{ field_error(errors, 'tipo_servico') }}
             </div>
             <div class="col-md-4">
                 <label class="form-label">Início da vigência</label>
-                <input type="date" class="form-control" name="inicio_vigencia" value="{{ form_data.inicio_vigencia if form_data else '' }}" required>
+                <input type="date" class="form-control{{ invalid_class(errors, 'inicio_vigencia') }}" name="inicio_vigencia" value="{{ form_data.inicio_vigencia if form_data else '' }}" required>
+                {{ field_error(errors, 'inicio_vigencia') }}
             </div>
             <div class="col-md-4">
                 <label class="form-label">Forma de pagamento</label>
-                <select class="form-select" name="forma_pagamento" required>
+                <select class="form-select{{ invalid_class(errors, 'forma_pagamento') }}" name="forma_pagamento" required>
                     <option value="">Selecione...</option>
                     {% for opt in dropdown_options.forma_pagamento %}
                     <option value="{{ opt.option_value }}" {% if form_data and form_data.forma_pagamento == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
                     {% endfor %}
                 </select>
+                {{ field_error(errors, 'forma_pagamento') }}
             </div>
             <div class="col-md-3">
                 <label class="form-label">Dia do vencimento</label>
-                <input type="number" class="form-control" name="dia_vencimento" min="1" max="31" value="{{ form_data.dia_vencimento if form_data else '25' }}" required>
+                <input type="number" class="form-control{{ invalid_class(errors, 'dia_vencimento') }}" name="dia_vencimento" min="1" max="31" value="{{ form_data.dia_vencimento if form_data else '25' }}" required>
+                {{ field_error(errors, 'dia_vencimento') }}
             </div>
             <div class="col-md-3">
                 <label class="form-label">Mês do vencimento</label>
-                <select class="form-select" name="mes_vencimento" required>
+                <select class="form-select{{ invalid_class(errors, 'mes_vencimento') }}" name="mes_vencimento" required>
                     <option value="">Selecione...</option>
                     {% for opt in dropdown_options.mes_vencimento %}
                     <option value="{{ opt.option_value }}" {% if form_data and form_data.mes_vencimento == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
                     {% endfor %}
                 </select>
+                {{ field_error(errors, 'mes_vencimento') }}
             </div>
             <div class="col-md-3">
                 <label class="form-label">Reajuste</label>
-                <select class="form-select" name="reajuste" required>
+                <select class="form-select{{ invalid_class(errors, 'reajuste') }}" name="reajuste" required>
                     <option value="">Selecione...</option>
                     {% for opt in dropdown_options.reajuste %}
                     <option value="{{ opt.option_value }}" {% if form_data and form_data.reajuste == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
                     {% endfor %}
                 </select>
+                {{ field_error(errors, 'reajuste') }}
             </div>
             <div class="col-md-3">
                 <label class="form-label">13ª parcela</label>
-                <select class="form-select" name="decima_terceira_parcela" required>
+                <select class="form-select{{ invalid_class(errors, 'decima_terceira_parcela') }}" name="decima_terceira_parcela" required>
                     <option value="">Selecione...</option>
                     {% for opt in dropdown_options.decima_terceira_parcela %}
                     <option value="{{ opt.option_value }}" {% if form_data and form_data.decima_terceira_parcela == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
                     {% endfor %}
                 </select>
+                {{ field_error(errors, 'decima_terceira_parcela') }}
             </div>
             <div class="col-md-4">
                 <label class="form-label">Rescisão</label>
-                <select class="form-select" name="rescisao" required>
+                <select class="form-select{{ invalid_class(errors, 'rescisao') }}" name="rescisao" required>
                     <option value="">Selecione...</option>
                     {% for opt in dropdown_options.rescisao %}
                     <option value="{{ opt.option_value }}" {% if form_data and form_data.rescisao == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
                     {% endfor %}
                 </select>
+                {{ field_error(errors, 'rescisao') }}
             </div>
             <div class="col-md-4">
                 <label class="form-label">Suspensão</label>
-                <select class="form-select" name="suspensao" required>
+                <select class="form-select{{ invalid_class(errors, 'suspensao') }}" name="suspensao" required>
                     <option value="">Selecione...</option>
                     {% for opt in dropdown_options.suspensao %}
                     <option value="{{ opt.option_value }}" {% if form_data and form_data.suspensao == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
                     {% endfor %}
                 </select>
+                {{ field_error(errors, 'suspensao') }}
             </div>
             <div class="col-md-4">
                 <label class="form-label">Foro</label>
-                <select class="form-select" name="foro" required>
+                <select class="form-select{{ invalid_class(errors, 'foro') }}" name="foro" required>
                     <option value="">Selecione...</option>
                     {% for opt in dropdown_options.foro %}
                     <option value="{{ opt.option_value }}" {% if form_data and form_data.foro == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
                     {% endfor %}
                 </select>
+                {{ field_error(errors, 'foro') }}
             </div>
         </div>
     </div>
@@ -121,13 +143,17 @@
         <div class="card-body">
             <div class="mb-3">
                 <label class="form-label">Detalhamento do serviço</label>
-                <select class="form-select" name="detalhamento_servico" required>
+                <select class="form-select{{ invalid_class(errors, 'detalhamento_servico') }}" name="detalhamento_servico" required>
                     <option value="">Selecione...</option>
                     {% for opt in dropdown_options.detalhamento_servico %}
                     <option value="{{ opt.option_value }}" {% if form_data and form_data.detalhamento_servico == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
                     {% endfor %}
                 </select>
+                {{ field_error(errors, 'detalhamento_servico') }}
             </div>
+            {% if errors.get('contratantes') %}
+            <div class="field-error mb-3">{{ errors.contratantes }}</div>
+            {% endif %}
             <div id="contratantes-container">
                 {% if form_data and form_data.contratantes %}
                     {% for c in form_data.contratantes %}
@@ -155,32 +181,38 @@
         <div class="card-body row g-3">
             <div class="col-md-6">
                 <label class="form-label">Empresa contratada</label>
-                <select class="form-select" name="empresa_contratada_id" id="empresa_contratada_id" required>
+                <select class="form-select{{ invalid_class(errors, 'empresa_contratada_id') }}" name="empresa_contratada_id" id="empresa_contratada_id" required>
                     <option value="">Selecione...</option>
                     {% for company in companies %}
                     <option value="{{ company.id }}" {% if form_data and form_data.empresa_contratada_id|string == company.id|string %}selected{% endif %}>{{ company.company_name }}</option>
                     {% endfor %}
                 </select>
+                {{ field_error(errors, 'empresa_contratada_id') }}
             </div>
             <div class="col-md-6">
                 <label class="form-label">CNPJ contratada</label>
-                <input type="text" class="form-control mask-cnpj" name="cnpj_contratada" id="cnpj_contratada" value="{{ form_data.cnpj_contratada if form_data else '' }}" required>
+                <input type="text" class="form-control mask-cnpj{{ invalid_class(errors, 'cnpj_contratada') }}" name="cnpj_contratada" id="cnpj_contratada" value="{{ form_data.cnpj_contratada if form_data else '' }}" required>
+                {{ field_error(errors, 'cnpj_contratada') }}
             </div>
             <div class="col-12">
                 <label class="form-label">Endereço contratado</label>
-                <input type="text" class="form-control" name="endereco_contratado" id="endereco_contratado" value="{{ form_data.endereco_contratado if form_data else '' }}" required>
+                <input type="text" class="form-control{{ invalid_class(errors, 'endereco_contratado') }}" name="endereco_contratado" id="endereco_contratado" value="{{ form_data.endereco_contratado if form_data else '' }}" required>
+                {{ field_error(errors, 'endereco_contratado') }}
             </div>
             <div class="col-md-4">
                 <label class="form-label">Nome contratado</label>
-                <input type="text" class="form-control" name="nome_contratado" id="nome_contratado" value="{{ form_data.nome_contratado if form_data else '' }}" required>
+                <input type="text" class="form-control{{ invalid_class(errors, 'nome_contratado') }}" name="nome_contratado" id="nome_contratado" value="{{ form_data.nome_contratado if form_data else '' }}" required>
+                {{ field_error(errors, 'nome_contratado') }}
             </div>
             <div class="col-md-4">
                 <label class="form-label">CPF contratado</label>
-                <input type="text" class="form-control mask-cpf" name="cpf_contratado" id="cpf_contratado" value="{{ form_data.cpf_contratado if form_data else '' }}" required>
+                <input type="text" class="form-control mask-cpf{{ invalid_class(errors, 'cpf_contratado') }}" name="cpf_contratado" id="cpf_contratado" value="{{ form_data.cpf_contratado if form_data else '' }}" required>
+                {{ field_error(errors, 'cpf_contratado') }}
             </div>
             <div class="col-md-4">
                 <label class="form-label">CRC contratado</label>
-                <input type="text" class="form-control" name="crc_contratado" id="crc_contratado" value="{{ form_data.crc_contratado if form_data else '' }}" required>
+                <input type="text" class="form-control{{ invalid_class(errors, 'crc_contratado') }}" name="crc_contratado" id="crc_contratado" value="{{ form_data.crc_contratado if form_data else '' }}" required>
+                {{ field_error(errors, 'crc_contratado') }}
             </div>
         </div>
     </div>
@@ -194,11 +226,13 @@
         <div class="card-body row g-3">
             <div class="col-md-6">
                 <label class="form-label">Local</label>
-                <input type="text" class="form-control" name="local" value="{{ form_data.local if form_data else 'Recife/PE' }}" required>
+                <input type="text" class="form-control{{ invalid_class(errors, 'local') }}" name="local" value="{{ form_data.local if form_data else 'Recife/PE' }}" required>
+                {{ field_error(errors, 'local') }}
             </div>
             <div class="col-md-6">
                 <label class="form-label">Data</label>
-                <input type="date" class="form-control" name="data_contrato" value="{{ form_data.data_contrato if form_data else '' }}" required>
+                <input type="date" class="form-control{{ invalid_class(errors, 'data_contrato') }}" name="data_contrato" value="{{ form_data.data_contrato if form_data else '' }}" required>
+                {{ field_error(errors, 'data_contrato') }}
             </div>
         </div>
     </div>

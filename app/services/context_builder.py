@@ -33,6 +33,71 @@ def _build_bloco_assinaturas(contratantes, contratada):
     return bloco_contratantes, bloco_contratada
 
 
+_MES_VENCIMENTO_FALLBACKS = {
+    "dia_fixo": "de cada mês",
+    "mes_corrente": "do mês corrente",
+    "mes_subsequente": "do mês subsequente",
+}
+
+
+def _vencimento_sufixo(mes_vencimento_option, mes_vencimento_raw=""):
+    if mes_vencimento_option and mes_vencimento_option.full_text:
+        return mes_vencimento_option.full_text.strip()
+    if mes_vencimento_option:
+        return _MES_VENCIMENTO_FALLBACKS.get(
+            mes_vencimento_option.option_value,
+            mes_vencimento_option.option_label,
+        )
+    return _MES_VENCIMENTO_FALLBACKS.get(mes_vencimento_raw, mes_vencimento_raw)
+
+
+def _build_texto_vencimento(dia, mes_vencimento_option, mes_vencimento_raw=""):
+    sufixo = _vencimento_sufixo(mes_vencimento_option, mes_vencimento_raw)
+    return f"{dia} {sufixo}", f"vencimento dia {dia} {sufixo}"
+
+
+_SUSPENSAO_FALLBACKS = {
+    "inadimplencia_1": (
+        "6.9  A inadimplência de 1 (uma) parcela autoriza a CONTRATADA a suspender "
+        "os serviços até quitação integral."
+    ),
+    "inadimplencia_2": (
+        "6.9  A inadimplência de 2 ou mais parcelas autoriza a CONTRATADA a suspender "
+        "os serviços até quitação integral."
+    ),
+    "inadimplencia_90d": (
+        "6.9  A inadimplência superior a 90 (noventa) dias autoriza a CONTRATADA a suspender "
+        "os serviços até quitação integral."
+    ),
+}
+
+
+def _ensure_clausula_numero(text, numero):
+    text = (text or "").strip()
+    if not text:
+        return ""
+    prefix = f"{numero}  "
+    if text.startswith(prefix):
+        return text
+    if text.startswith(f"{numero} "):
+        return prefix + text[len(numero) :].lstrip()
+    return prefix + text
+
+
+def _build_texto_suspensao(suspensao_option, suspensao_raw=""):
+    if suspensao_option and suspensao_option.full_text:
+        return _ensure_clausula_numero(suspensao_option.full_text.strip(), "6.9")
+    if suspensao_option:
+        fallback = _SUSPENSAO_FALLBACKS.get(suspensao_option.option_value)
+        if fallback:
+            return fallback
+        return _ensure_clausula_numero(suspensao_option.option_label, "6.9")
+    fallback = _SUSPENSAO_FALLBACKS.get(suspensao_raw, "")
+    if fallback:
+        return fallback
+    return _ensure_clausula_numero(suspensao_raw, "6.9")
+
+
 def _build_texto_partes(contratantes, contratada):
     partes = []
     for index, c in enumerate(contratantes):
@@ -103,9 +168,15 @@ def build_contract_context(form_data):
     data_contrato = parse_date(form_data.get("data_contrato"))
     local = form_data.get("local", "")
 
-    texto_forma_pagamento = forma_pagamento.full_text if forma_pagamento and forma_pagamento.full_text else (
-        f"{dia_vencimento} de {mes_vencimento.option_label if mes_vencimento else form_data.get('mes_vencimento', '')} de cada mês"
+    texto_vencimento_resumo, texto_vencimento_clausula = _build_texto_vencimento(
+        dia_vencimento,
+        mes_vencimento,
+        form_data.get("mes_vencimento", ""),
     )
+    texto_forma_pagamento = texto_vencimento_resumo
+    texto_forma = ""
+    if forma_pagamento:
+        texto_forma = forma_pagamento.full_text or forma_pagamento.option_label
 
     exibir_clausula = True
     if decima_terceira:
@@ -151,15 +222,13 @@ def build_contract_context(form_data):
         "texto_rescisao": texto_rescisao,
         "valor_mensal_total_formatado": format_currency(total),
         "texto_clausula_4_1": (
-            f"4.1  Os honorários mensais são de {format_currency(total)}, com vencimento conforme "
-            f"{texto_forma_pagamento}."
+            f"4.1  Os honorários mensais são de {format_currency(total)}. "
+            f"O pagamento deve ser feito {texto_forma}, {texto_vencimento_clausula}."
         ),
         "texto_clausula_4_2": reajuste.full_text if reajuste and reajuste.full_text else f"4.2  {reajuste.option_label if reajuste else ''}",
         "exibir_clausula_decima_terceira": exibir_clausula,
         "texto_decima_terceira_parcela": texto_decima_terceira,
-        "texto_suspensao": suspensao.full_text if suspensao and suspensao.full_text else (
-            f"6.9  {suspensao.option_label if suspensao else ''}"
-        ),
+        "texto_suspensao": _build_texto_suspensao(suspensao, form_data.get("suspensao", "")),
         "texto_clausula_8_1": (
             f"8.1  Fica eleito o foro da Comarca de {foro.option_label if foro else local} "
             f"para dirimir quaisquer litígios decorrentes deste Contrato."

@@ -1,3 +1,4 @@
+{% from "macros/form_errors.html" import field_error, invalid_class %}
 <div class="contratante-row card" data-index="{{ index }}">
     <div class="card-header">
         <span class="fw-semibold">
@@ -11,33 +12,38 @@
     <div class="card-body row g-3">
         <div class="col-md-4">
             <label class="form-label">CNPJ</label>
-            <input type="text" class="form-control mask-cnpj" name="contratantes[{{ index }}][cnpj]" value="{{ c.cnpj if c else '' }}" required>
-            {% if errors.get('contratantes[' ~ index ~ '].cnpj') %}<div class="field-error">{{ errors['contratantes[' ~ index ~ '].cnpj'] }}</div>{% endif %}
+            <input type="text" class="form-control mask-cnpj{{ invalid_class(errors, 'contratantes[' ~ index ~ '].cnpj') }}" name="contratantes[{{ index }}][cnpj]" value="{{ c.cnpj if c else '' }}" required>
+            {{ field_error(errors, 'contratantes[' ~ index ~ '].cnpj') }}
         </div>
         <div class="col-md-4">
             <label class="form-label">Enquadramento tributário</label>
-            <select class="form-select" name="contratantes[{{ index }}][enquadramento_tributario]" required>
+            <select class="form-select{{ invalid_class(errors, 'contratantes[' ~ index ~ '].enquadramento_tributario') }}" name="contratantes[{{ index }}][enquadramento_tributario]" required>
                 <option value="">Selecione...</option>
                 {% for opt in dropdown_options['enquadramento_tributario'] %}
                 <option value="{{ opt.option_value }}" {% if c and c.enquadramento_tributario == opt.option_value %}selected{% endif %}>{{ opt.option_label }}</option>
                 {% endfor %}
             </select>
+            {{ field_error(errors, 'contratantes[' ~ index ~ '].enquadramento_tributario') }}
         </div>
         <div class="col-md-4">
             <label class="form-label">Razão social</label>
-            <input type="text" class="form-control" name="contratantes[{{ index }}][razao_social]" value="{{ c.razao_social if c else '' }}" required>
+            <input type="text" class="form-control{{ invalid_class(errors, 'contratantes[' ~ index ~ '].razao_social') }}" name="contratantes[{{ index }}][razao_social]" value="{{ c.razao_social if c else '' }}" required>
+            {{ field_error(errors, 'contratantes[' ~ index ~ '].razao_social') }}
         </div>
         <div class="col-md-4">
             <label class="form-label">Valor mensal</label>
-            <input type="text" class="form-control mask-currency contratante-valor" name="contratantes[{{ index }}][valor_mensal]" value="{{ c.valor_mensal if c else '' }}" required>
+            <input type="text" class="form-control mask-currency contratante-valor{{ invalid_class(errors, 'contratantes[' ~ index ~ '].valor_mensal') }}" name="contratantes[{{ index }}][valor_mensal]" value="{{ c.valor_mensal if c else '' }}" required>
+            {{ field_error(errors, 'contratantes[' ~ index ~ '].valor_mensal') }}
         </div>
         <div class="col-md-4">
             <label class="form-label">Nome (pessoa física)</label>
-            <input type="text" class="form-control" name="contratantes[{{ index }}][nome]" value="{{ c.nome if c else '' }}" required>
+            <input type="text" class="form-control{{ invalid_class(errors, 'contratantes[' ~ index ~ '].nome') }}" name="contratantes[{{ index }}][nome]" value="{{ c.nome if c else '' }}" required>
+            {{ field_error(errors, 'contratantes[' ~ index ~ '].nome') }}
         </div>
         <div class="col-md-4">
             <label class="form-label">CPF</label>
-            <input type="text" class="form-control mask-cpf" name="contratantes[{{ index }}][cpf]" value="{{ c.cpf if c else '' }}" required>
+            <input type="text" class="form-control mask-cpf{{ invalid_class(errors, 'contratantes[' ~ index ~ '].cpf') }}" name="contratantes[{{ index }}][cpf]" value="{{ c.cpf if c else '' }}" required>
+            {{ field_error(errors, 'contratantes[' ~ index ~ '].cpf') }}
         </div>
     </div>
 </div>
