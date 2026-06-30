@@ -16,12 +16,17 @@ _DEFAULT_LIBREOFFICE = (
 )
 
 
+def _database_url():
+    url = os.getenv("DATABASE_URL", f"sqlite:///{INSTANCE_DIR / 'contratos.db'}")
+    # Railway/Heroku usam postgres://; SQLAlchemy exige postgresql://
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql://", 1)
+    return url
+
+
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-change-in-production")
-    SQLALCHEMY_DATABASE_URI = os.getenv(
-        "DATABASE_URL",
-        f"sqlite:///{INSTANCE_DIR / 'contratos.db'}",
-    )
+    SQLALCHEMY_DATABASE_URI = _database_url()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     TEMPLATE_DOCX = BASE_DIR / "app" / "templates_docx" / "contrato_modelo.docx"
