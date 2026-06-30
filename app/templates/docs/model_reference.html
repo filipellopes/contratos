@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% block title %}Referência do modelo — Valore{% endblock %}
-{% block topbar_title %}Referência do modelo de contrato{% endblock %}
-{% block topbar_subtitle %}Onde cada variável aparece no Word, como cadastrar opções e qual usar como valor interno{% endblock %}
+{% block title %}Guia de opções — Valore{% endblock %}
+{% block topbar_title %}Guia de opções do contrato{% endblock %}
+{% block topbar_subtitle %}Como cadastrar opções e onde cada uma aparece no contrato final{% endblock %}
 
 {% block topbar_actions %}
 <a href="{{ url_for('docs.download_template') }}" class="btn btn-outline-primary">
@@ -10,176 +10,186 @@
 {% endblock %}
 
 {% block content %}
-<ul class="nav nav-tabs" id="refTabs" role="tablist">
-    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-vars"><i class="bi bi-braces me-1"></i> Variáveis Word</button></li>
-    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-opcoes"><i class="bi bi-sliders me-1"></i> Campos de opções</button></li>
-    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-cadastradas"><i class="bi bi-list-check me-1"></i> Opções cadastradas</button></li>
-    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-form"><i class="bi bi-ui-checks me-1"></i> Formulário</button></li>
-</ul>
 
-<div class="tab-content">
-    <div class="tab-pane fade show active" id="tab-vars">
-        {% if missing_in_docx %}
-        <div class="alert alert-warning">
-            <i class="bi bi-exclamation-triangle"></i>
-            <div>
-                <strong>Placeholders ausentes no .docx atual:</strong>
-                {% for v in missing_in_docx %}<code class="me-1">{{ "{{ " }}{{ v }}{{ " }}" }}</code>{% endfor %}
-                — regenere com <code>python scripts/build_template.py</code> ou edite o Word manualmente.
+{# ── Conceito rápido ─────────────────────────────────────────────── #}
+<div class="card mb-4">
+    <div class="card-header">
+        <span class="card-header-icon"><i class="bi bi-lightbulb"></i> Como funciona uma opção?</span>
+    </div>
+    <div class="card-body">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="d-flex gap-3">
+                    <div class="fs-2 text-primary"><i class="bi bi-ui-radios"></i></div>
+                    <div>
+                        <div class="fw-semibold mb-1">Nome exibido na lista</div>
+                        <div class="text-secondary-custom small">É o texto que aparece na lista suspensa do formulário. Também vai para a <strong>tabela de resumo</strong> do contrato (primeira página).</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex gap-3">
+                    <div class="fs-2 text-success"><i class="bi bi-file-text"></i></div>
+                    <div>
+                        <div class="fw-semibold mb-1">Texto completo para as cláusulas</div>
+                        <div class="text-secondary-custom small">Texto que aparece nas <strong>cláusulas do contrato</strong>. Se deixar em branco, o sistema usa o <em>nome exibido</em> no lugar — exceto em "Detalhamento do serviço", que ficará vazio.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex gap-3">
+                    <div class="fs-2 text-secondary"><i class="bi bi-gear"></i></div>
+                    <div>
+                        <div class="fw-semibold mb-1">O que o sistema faz sozinho</div>
+                        <div class="text-secondary-custom small">O sistema gera automaticamente o identificador interno de cada opção. Você não precisa se preocupar com isso.</div>
+                    </div>
+                </div>
             </div>
         </div>
-        {% endif %}
+    </div>
+</div>
 
-        <div class="table-wrap mt-3">
+{# ── Tabela de campos ─────────────────────────────────────────────── #}
+<div class="card mb-4">
+    <div class="card-header">
+        <span class="card-header-icon"><i class="bi bi-table"></i> O que cada campo faz no contrato</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width:20%">Campo</th>
+                        <th style="width:30%">Onde o <em>nome exibido</em> aparece</th>
+                        <th style="width:35%">Onde o <em>texto completo</em> aparece</th>
+                        <th style="width:15%">Se texto completo ficar vazio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fw-medium">Tipo de serviço</td>
+                        <td>Tabela de resumo — linha «Serviço»</td>
+                        <td class="text-secondary-custom">Não é usado nas cláusulas</td>
+                        <td><span class="badge badge-secondary">Sem efeito</span></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-medium">Forma de pagamento</td>
+                        <td>Tabela de resumo — linha «Pagamento»</td>
+                        <td>Tabela de resumo e Cláusula 4.1 (honorários)</td>
+                        <td><span class="badge badge-warning">Usa dia + mês</span></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-medium">Reajuste</td>
+                        <td>Tabela de resumo — linha «Reajuste»</td>
+                        <td>Cláusula 4.2 (reajuste anual)</td>
+                        <td><span class="badge badge-warning">Usa nome exibido</span></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-medium">Rescisão</td>
+                        <td>Tabela de resumo — linha «Rescisão»</td>
+                        <td>Cláusula 3.1 (trecho de aviso prévio)</td>
+                        <td><span class="badge badge-warning">Usa nome exibido</span></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-medium">Suspensão</td>
+                        <td>Tabela de resumo — linha «Suspensão»</td>
+                        <td>Cláusula 6.9 (suspensão por inadimplência)</td>
+                        <td><span class="badge badge-warning">Usa nome exibido</span></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-medium">Foro</td>
+                        <td>Tabela de resumo — linha «Foro» e Cláusula 8.1</td>
+                        <td class="text-secondary-custom">O nome exibido já é usado diretamente</td>
+                        <td><span class="badge badge-secondary">Sem efeito</span></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-medium">13ª parcela</td>
+                        <td>Tabela de resumo — linha «13ª Parcela»</td>
+                        <td>Cláusula 4.6 (quando habilitada via JSON)</td>
+                        <td><span class="badge badge-warning">Usa texto padrão</span></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-medium">Detalhamento do serviço</td>
+                        <td class="text-secondary-custom">Não aparece no resumo</td>
+                        <td>Cláusula 2.2 (escopo completo dos serviços)</td>
+                        <td><span class="badge badge-danger">Cláusula fica vazia</span></td>
+                    </tr>
+                    <tr>
+                        <td class="fw-medium">Enquadramento tributário</td>
+                        <td>Tabela de contratantes e Cláusula 2.1</td>
+                        <td class="text-secondary-custom">Não é usado nas cláusulas</td>
+                        <td><span class="badge badge-secondary">Sem efeito</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{# ── Opções cadastradas ───────────────────────────────────────────── #}
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="card-header-icon"><i class="bi bi-list-check"></i> Opções já cadastradas</span>
+        <a href="{{ url_for('options.create_option') }}" class="btn btn-sm btn-primary">
+            <i class="bi bi-plus-lg"></i> Nova opção
+        </a>
+    </div>
+    <div class="card-body p-0">
+        {% for field, opts in options_by_field.items() %}
+        <div class="border-bottom">
+            <div class="px-3 py-2 bg-light fw-semibold small text-secondary-custom">
+                {{ field_names[field] }}
+            </div>
+            {% if opts %}
             <div class="table-responsive">
-                <table class="table table-sm align-middle mb-0">
+                <table class="table table-sm mb-0">
                     <thead>
                         <tr>
-                            <th>Variável Word</th>
-                            <th>Seção</th>
-                            <th>Onde no documento</th>
-                            <th>Origem do valor</th>
-                            <th>Campo opção</th>
-                            <th>No .docx?</th>
+                            <th>Nome exibido na lista</th>
+                            <th>Ativa</th>
+                            <th style="max-width:320px">Texto completo (início)</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for v in word_variables %}
-                        <tr>
-                            <td><code>{{ "{{ " }}{{ v.variable }}{{ " }}" }}</code></td>
-                            <td>{{ v.section }}</td>
-                            <td>{{ v.where }}</td>
-                            <td class="small">{{ v.source }}</td>
-                            <td>{% if v.option_field %}<code>{{ v.option_field }}</code>{% else %}—{% endif %}</td>
+                        {% for o in opts %}
+                        <tr class="{% if not o.is_active %}row-inactive{% endif %}">
+                            <td class="fw-medium">{{ o.option_label }}</td>
                             <td>
-                                {% if v.variable in missing_in_docx %}
-                                <span class="badge badge-warning">ausente</span>
+                                {% if o.is_active %}
+                                <span class="badge badge-success">Sim</span>
                                 {% else %}
-                                <span class="badge badge-success">ok</span>
+                                <span class="badge badge-secondary">Não</span>
                                 {% endif %}
+                            </td>
+                            <td class="small text-secondary-custom text-truncate" style="max-width:320px">
+                                {{ (o.full_text or '—')[:120] }}{% if o.full_text and o.full_text|length > 120 %}…{% endif %}
                             </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        </div>
-
-        {% if conditional_tags %}
-        <div class="card mt-4">
-            <div class="card-header">
-                <span class="card-header-icon"><i class="bi bi-diagram-3"></i> Blocos condicionais</span>
-            </div>
-            <div class="card-body">
-                <ul class="mb-2">
-                    {% for t in conditional_tags %}<li><code>{{ t }}</code></li>{% endfor %}
-                </ul>
-                <p class="small text-secondary-custom mb-0">Ex.: 13ª parcela — <code>extra_data_json</code>: <code>{"exibir_clausula": false}</code> omite a cláusula 4.6.</p>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-
-    <div class="tab-pane fade" id="tab-opcoes">
-        <p class="text-secondary-custom">Ao cadastrar em <a href="{{ url_for('options.list_options') }}">Opções</a>, use exatamente estes valores no campo <strong>Campo</strong> e escolha um <strong>valor interno</strong> único (sem espaços, preferir <code>snake_case</code>).</p>
-        <div class="table-wrap mt-3">
-            <div class="table-responsive">
-                <table class="table table-sm mb-0">
-                    <thead>
-                        <tr>
-                            <th>Campo (field_name)</th>
-                            <th>Nome exibido</th>
-                            <th>Bloco formulário</th>
-                            <th>Exemplo valor interno</th>
-                            <th>Uso do texto completo (full_text)</th>
-                            <th>extra_data_json</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for g in option_guide %}
-                        <tr>
-                            <td><code>{{ g.field_name }}</code></td>
-                            <td>{{ field_names[g.field_name] }}</td>
-                            <td>{{ g.form_block }}</td>
-                            <td><code>{{ g.valor_interno_hint }}</code></td>
-                            <td class="small">{{ g.full_text_use }}</td>
-                            <td class="small"><code>{{ g.extra_data_use }}</code></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card mt-4">
-            <div class="card-body">
-                <h2 class="h6 fw-semibold mb-3"><i class="bi bi-lightbulb text-warning me-1"></i> Regras rápidas</h2>
-                <ul class="mb-0 small text-secondary-custom">
-                    <li><strong>Nome exibido</strong> → aparece na lista suspensa do formulário.</li>
-                    <li><strong>Valor interno</strong> → salvo no formulário e usado para buscar a opção no banco (<code>option_value</code>).</li>
-                    <li><strong>Texto completo</strong> → inserido na cláusula correspondente do contrato.</li>
-                    <li><strong>Empresa contratada</strong> não é opção — cadastre em <a href="{{ url_for('companies.list_companies') }}">Empresas</a>.</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="tab-pane fade" id="tab-cadastradas">
-        <p class="text-secondary-custom">Valores internos já cadastrados no sistema (use os mesmos ao criar novas opções compatíveis).</p>
-        {% for field, opts in options_by_field.items() %}
-        <div class="card mt-3">
-            <div class="card-header">
-                <code>{{ field }}</code> — {{ field_names[field] }}
-            </div>
-            <div class="card-body p-0">
-                {% if opts %}
-                <div class="table-responsive">
-                    <table class="table table-sm mb-0">
-                        <thead><tr><th>Label</th><th>Valor interno</th><th>Ativa</th><th>Texto completo (início)</th><th>extra_data</th></tr></thead>
-                        <tbody>
-                            {% for o in opts %}
-                            <tr class="{% if not o.is_active %}row-inactive{% endif %}">
-                                <td>{{ o.option_label }}</td>
-                                <td><code>{{ o.option_value }}</code></td>
-                                <td>
-                                    {% if o.is_active %}
-                                    <span class="badge badge-success">Sim</span>
-                                    {% else %}
-                                    <span class="badge badge-secondary">Não</span>
-                                    {% endif %}
-                                </td>
-                                <td class="small text-truncate" style="max-width:280px">{{ (o.full_text or '—')[:120] }}{% if o.full_text and o.full_text|length > 120 %}…{% endif %}</td>
-                                <td class="small"><code>{{ o.extra_data_json or '{}' }}</code></td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% else %}
-                <p class="p-3 mb-0 text-secondary-custom">Nenhuma opção cadastrada. <a href="{{ url_for('options.create_option') }}">Criar opção</a></p>
-                {% endif %}
-            </div>
+            {% else %}
+            <p class="px-3 py-2 mb-0 text-secondary-custom small">
+                Nenhuma opção cadastrada.
+                <a href="{{ url_for('options.create_option') }}">Criar opção</a>
+            </p>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
+</div>
 
-    <div class="tab-pane fade" id="tab-form">
-        <p class="text-secondary-custom">Campos preenchidos diretamente no formulário (não vêm da tabela de opções).</p>
-        <div class="table-wrap mt-3">
-            <table class="table table-sm mb-0">
-                <thead><tr><th>Campo</th><th>Bloco</th><th>Tipo</th><th>Obrigatório</th></tr></thead>
-                <tbody>
-                    {% for f in form_fields %}
-                    <tr>
-                        <td><code>{{ f.field }}</code></td>
-                        <td>{{ f.block }}</td>
-                        <td>{{ f.type }}</td>
-                        <td>{% if f.required %}<span class="badge badge-success">Sim</span>{% else %}<span class="badge badge-secondary">Não</span>{% endif %}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+{# ── Aviso de placeholders ausentes (técnico, exibido somente se houver problema) #}
+{% if missing_in_docx %}
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle"></i>
+    <div>
+        <strong>Atenção:</strong> O modelo Word atual não contém todos os campos esperados pelo sistema.
+        Faltam: {% for v in missing_in_docx %}<code class="me-1">{{ v }}</code>{% endfor %}.
+        Regenere o modelo com <code>python scripts/build_template.py</code> ou corrija o arquivo Word manualmente.
     </div>
 </div>
+{% endif %}
+
 {% endblock %}

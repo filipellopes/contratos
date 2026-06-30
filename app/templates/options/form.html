@@ -1,54 +1,52 @@
 {% extends "base.html" %}
 {% block title %}{% if option %}Editar opção{% else %}Nova opção{% endif %} — Valore{% endblock %}
 {% block topbar_title %}{% if option %}Editar opção{% else %}Nova opção{% endif %}{% endblock %}
-{% block topbar_subtitle %}Configure valores das listas suspensas do contrato{% endblock %}
+{% block topbar_subtitle %}Configure os valores das listas suspensas do contrato{% endblock %}
 
 {% block content %}
-<div class="alert alert-info mb-4">
-    <i class="bi bi-lightbulb"></i>
-    <span>Consulte a <a href="{{ url_for('docs.model_reference') }}" class="alert-link">Referência do modelo</a> para ver o campo (<code>field_name</code>), valor interno e uso do texto completo.</span>
-</div>
-
 <form method="post" class="card">
     <div class="card-header">
         <span class="card-header-icon"><i class="bi bi-sliders"></i> Dados da opção</span>
     </div>
     <div class="card-body row g-3">
-        <div class="col-md-6">
-            <label class="form-label">Campo</label>
+        <div class="col-md-8">
+            <label class="form-label">Campo <span class="text-danger">*</span></label>
             <select class="form-select" name="field_name" required>
                 <option value="">Selecione...</option>
                 {% for field in dropdown_fields %}
                 <option value="{{ field }}" {% if option and option.field_name == field %}selected{% endif %}>{{ FIELD_NAMES[field] }}</option>
                 {% endfor %}
             </select>
+            <div class="form-text">A qual lista suspensa do formulário esta opção pertence.</div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <label class="form-label">Ordem de exibição</label>
             <input type="number" class="form-control" name="sort_order" value="{{ option.sort_order if option else 0 }}">
-        </div>
-        <div class="col-md-6">
-            <label class="form-label">Nome exibido na lista</label>
-            <input type="text" class="form-control" name="option_label" value="{{ option.option_label if option else '' }}" required>
-        </div>
-        <div class="col-md-6">
-            <label class="form-label">Valor interno</label>
-            <input type="text" class="form-control" name="option_value" value="{{ option.option_value if option else '' }}" required>
+            <div class="form-text">Menor número aparece primeiro.</div>
         </div>
         <div class="col-12">
-            <label class="form-label">Texto completo para o contrato</label>
-            <textarea class="form-control" name="full_text" rows="6">{{ option.full_text if option else '' }}</textarea>
-            <div class="form-text">Texto inserido na cláusula correspondente, quando aplicável.</div>
+            <label class="form-label">Nome exibido na lista <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="option_label" value="{{ option.option_label if option else '' }}" required placeholder="Ex.: Boleto bancário">
+            <div class="form-text">Este nome aparece na lista suspensa do formulário e na <strong>tabela de resumo</strong> do contrato.</div>
+        </div>
+        <div class="col-12">
+            <label class="form-label">Texto completo para as cláusulas</label>
+            <textarea class="form-control" name="full_text" rows="6" placeholder="Escreva aqui o texto que aparecerá na cláusula correspondente do contrato...">{{ option.full_text if option else '' }}</textarea>
+            <div class="form-text">
+                Este texto é inserido diretamente nas <strong>cláusulas do contrato</strong>.
+                Se deixar em branco, o sistema usa o <em>nome exibido</em> como substituto
+                (exceto para "Detalhamento do serviço", que ficará vazio).
+            </div>
         </div>
         <div class="col-12">
             <label class="form-label">Dados extras (JSON)</label>
-            <textarea class="form-control font-monospace" name="extra_data_json" rows="3">{{ option.extra_data_json if option else '{}' }}</textarea>
-            <div class="form-text">Ex.: {"exibir_clausula": true} para 13ª parcela.</div>
+            <textarea class="form-control font-monospace" name="extra_data_json" rows="2">{{ option.extra_data_json if option else '{}' }}</textarea>
+            <div class="form-text">Apenas para <strong>13ª parcela</strong>: use <code>{"exibir_clausula": true}</code> para incluir a cláusula 4.6, ou <code>{"exibir_clausula": false}</code> para omiti-la.</div>
         </div>
         <div class="col-12">
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {% if not option or option.is_active %}checked{% endif %}>
-                <label class="form-check-label" for="is_active">Opção ativa</label>
+                <label class="form-check-label" for="is_active">Opção ativa (aparece no formulário)</label>
             </div>
         </div>
     </div>
