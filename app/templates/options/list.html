@@ -1,56 +1,77 @@
 {% extends "base.html" %}
 {% block title %}Opções — Valore{% endblock %}
+{% block topbar_title %}Opções de contrato{% endblock %}
+{% block topbar_subtitle %}Valores configuráveis das listas suspensas do formulário{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('options.create_option') }}" class="btn btn-primary">
+    <i class="bi bi-plus-lg"></i> Nova opção
+</a>
+{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 mb-0">Opções de contrato</h1>
-    <a href="{{ url_for('options.create_option') }}" class="btn btn-primary">Nova opção</a>
-</div>
-
-<form method="get" class="row g-2 mb-3">
-    <div class="col-auto">
-        <select name="field_name" class="form-select" onchange="this.form.submit()">
-            <option value="">Todos os campos</option>
-            {% for field in dropdown_fields %}
-            <option value="{{ field }}" {% if field_filter == field %}selected{% endif %}>{{ FIELD_NAMES[field] }}</option>
-            {% endfor %}
-        </select>
-    </div>
+<form method="get" class="filter-bar">
+    <i class="bi bi-funnel text-secondary-custom"></i>
+    <select name="field_name" class="form-select form-select-sm" style="max-width: 280px;" onchange="this.form.submit()">
+        <option value="">Todos os campos</option>
+        {% for field in dropdown_fields %}
+        <option value="{{ field }}" {% if field_filter == field %}selected{% endif %}>{{ FIELD_NAMES[field] }}</option>
+        {% endfor %}
+    </select>
 </form>
 
-<div class="table-responsive">
-    <table class="table table-hover align-middle">
-        <thead class="table-light">
-            <tr>
-                <th>Campo</th>
-                <th>Label</th>
-                <th>Valor</th>
-                <th>Ordem</th>
-                <th>Ativa</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for option in options %}
-            <tr class="{% if not option.is_active %}table-secondary{% endif %}">
-                <td>{{ option.field_label }}</td>
-                <td>{{ option.option_label }}</td>
-                <td><code>{{ option.option_value }}</code></td>
-                <td>{{ option.sort_order }}</td>
-                <td>{% if option.is_active %}Sim{% else %}Não{% endif %}</td>
-                <td class="text-nowrap">
-                    <a href="{{ url_for('options.edit_option', option_id=option.id) }}" class="btn btn-sm btn-outline-primary">Editar</a>
-                    {% if option.is_active %}
-                    <form method="post" action="{{ url_for('options.deactivate_option', option_id=option.id) }}" class="d-inline">
-                        <button type="submit" class="btn btn-sm btn-outline-warning">Desativar</button>
-                    </form>
-                    {% endif %}
-                </td>
-            </tr>
-            {% else %}
-            <tr><td colspan="6" class="text-center text-muted py-4">Nenhuma opção cadastrada.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="table-wrap">
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Campo</th>
+                    <th>Label</th>
+                    <th>Valor</th>
+                    <th>Ordem</th>
+                    <th>Ativa</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for option in options %}
+                <tr class="{% if not option.is_active %}row-inactive{% endif %}">
+                    <td>{{ option.field_label }}</td>
+                    <td class="fw-medium">{{ option.option_label }}</td>
+                    <td><code>{{ option.option_value }}</code></td>
+                    <td>{{ option.sort_order }}</td>
+                    <td>
+                        {% if option.is_active %}
+                        <span class="badge badge-success">Sim</span>
+                        {% else %}
+                        <span class="badge badge-secondary">Não</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="gap-actions">
+                            <a href="{{ url_for('options.edit_option', option_id=option.id) }}" class="btn btn-sm btn-outline-primary" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            {% if option.is_active %}
+                            <form method="post" action="{{ url_for('options.deactivate_option', option_id=option.id) }}" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-warning" title="Desativar">
+                                    <i class="bi bi-pause-circle"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="empty-state">
+                        <i class="bi bi-sliders"></i>
+                        Nenhuma opção cadastrada.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

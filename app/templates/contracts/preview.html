@@ -1,17 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Prévia do contrato — Valore{% endblock %}
+{% block topbar_title %}Prévia do contrato{% endblock %}
+{% block topbar_subtitle %}Revise o conteúdo antes de gerar o documento final{% endblock %}
 
 {% block extra_css %}
 <link href="{{ url_for('static', filename='css/preview.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">Prévia do contrato</h1>
-</div>
-
 <div class="alert alert-info">
-    Esta é uma prévia em HTML. A versão final em Word/PDF será gerada a partir do modelo Word oficial.
+    <i class="bi bi-info-circle"></i>
+    <span>Esta é uma prévia em HTML. A versão final em Word/PDF será gerada a partir do modelo Word oficial.</span>
 </div>
 
 <article class="contract-preview mx-auto">
@@ -120,10 +119,14 @@
     </section>
 </article>
 
-<div class="d-flex gap-2 mt-4">
+<div class="action-bar action-bar-sticky">
     <form method="post" action="{{ url_for('contracts.generate_contract') }}">
-        <button type="submit" class="btn btn-success btn-lg">Gerar contrato</button>
+        <button type="submit" class="btn btn-success btn-lg">
+            <i class="bi bi-check-circle"></i> Gerar contrato
+        </button>
     </form>
-    <a href="{{ url_for('contracts.new_contract') }}" class="btn btn-outline-secondary btn-lg">Voltar e editar</a>
+    <a href="{{ url_for('contracts.new_contract') }}" class="btn btn-outline-secondary btn-lg">
+        <i class="bi bi-pencil"></i> Voltar e editar
+    </a>
 </div>
 {% endblock %}

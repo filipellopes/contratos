@@ -1,23 +1,30 @@
 {% extends "base.html" %}
 {% block title %}Novo contrato — Valore{% endblock %}
+{% block topbar_title %}Novo contrato{% endblock %}
+{% block topbar_subtitle %}Preencha os dados para gerar um contrato de assessoria contábil{% endblock %}
 
 {% block content %}
-<h1 class="h3 mb-4">Novo contrato</h1>
-
 <form method="post" action="{{ url_for('contracts.preview_contract') }}" id="contract-form" novalidate>
-    <div class="card mb-4">
-        <div class="card-header fw-semibold">Identificação</div>
+
+    <div class="card form-section">
+        <div class="card-header">
+            <span class="card-header-icon"><i class="bi bi-person-badge"></i> Identificação</span>
+        </div>
         <div class="card-body">
             <div class="col-md-6">
                 <label class="form-label">Nome de quem está gerando *</label>
-                <input type="text" class="form-control" name="generated_by_name" value="{{ form_data.generated_by_name if form_data else '' }}" required>
-                {% if errors.get('generated_by_name') %}<div class="text-danger small">{{ errors.generated_by_name }}</div>{% endif %}
+                <input type="text" class="form-control" name="generated_by_name" value="{{ form_data.generated_by_name if form_data else '' }}" required placeholder="Seu nome completo">
+                {% if errors.get('generated_by_name') %}<div class="field-error">{{ errors.generated_by_name }}</div>{% endif %}
             </div>
         </div>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header fw-semibold">Bloco 1 — Dados gerais do contrato</div>
+    <div class="card form-section">
+        <div class="card-header">
+            <span class="card-header-icon">
+                <span class="form-section-number">1</span> Dados gerais do contrato
+            </span>
+        </div>
         <div class="card-body row g-3">
             <div class="col-md-4">
                 <label class="form-label">Tipo de serviço</label>
@@ -102,10 +109,14 @@
         </div>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <span class="fw-semibold">Bloco 2 — Dados da(s) contratante(s)</span>
-            <button type="button" class="btn btn-sm btn-outline-primary" id="btn-add-contratante">Adicionar contratante</button>
+    <div class="card form-section">
+        <div class="card-header">
+            <span class="card-header-icon">
+                <span class="form-section-number">2</span> Dados da(s) contratante(s)
+            </span>
+            <button type="button" class="btn btn-sm btn-outline-primary" id="btn-add-contratante">
+                <i class="bi bi-plus-lg"></i> Adicionar contratante
+            </button>
         </div>
         <div class="card-body">
             <div class="mb-3">
@@ -128,14 +139,19 @@
                     {% include "partials/contratante_row.html" %}
                 {% endif %}
             </div>
-            <div class="alert alert-light border mt-3 mb-0">
-                <strong>Total mensal:</strong> <span id="valor-total">R$ 0,00</span>
+            <div class="total-banner">
+                <span class="total-banner-label">Total mensal</span>
+                <span class="total-banner-value" id="valor-total">R$ 0,00</span>
             </div>
         </div>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header fw-semibold">Bloco 3 — Dados da contratada/prestadora</div>
+    <div class="card form-section">
+        <div class="card-header">
+            <span class="card-header-icon">
+                <span class="form-section-number">3</span> Dados da contratada/prestadora
+            </span>
+        </div>
         <div class="card-body row g-3">
             <div class="col-md-6">
                 <label class="form-label">Empresa contratada</label>
@@ -169,8 +185,12 @@
         </div>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header fw-semibold">Bloco 4 — Local e data</div>
+    <div class="card form-section">
+        <div class="card-header">
+            <span class="card-header-icon">
+                <span class="form-section-number">4</span> Local e data
+            </span>
+        </div>
         <div class="card-body row g-3">
             <div class="col-md-6">
                 <label class="form-label">Local</label>
@@ -183,8 +203,10 @@
         </div>
     </div>
 
-    <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary btn-lg">Visualizar prévia</button>
+    <div class="action-bar action-bar-sticky">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="bi bi-eye"></i> Visualizar prévia
+        </button>
         <a href="{{ url_for('contracts.list_contracts') }}" class="btn btn-outline-secondary btn-lg">Cancelar</a>
     </div>
 </form>

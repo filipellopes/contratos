@@ -47,10 +47,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     container.addEventListener("click", (event) => {
-        if (event.target.classList.contains("btn-remove-contratante")) {
+        const removeBtn = event.target.closest(".btn-remove-contratante");
+        if (removeBtn) {
             const rows = container.querySelectorAll(".contratante-row");
             if (rows.length <= 1) return;
-            event.target.closest(".contratante-row").remove();
+            removeBtn.closest(".contratante-row").remove();
             reindexContratantes();
         }
     });

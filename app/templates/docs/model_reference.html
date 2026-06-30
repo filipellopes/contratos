@@ -1,107 +1,120 @@
 {% extends "base.html" %}
 {% block title %}Referência do modelo — Valore{% endblock %}
+{% block topbar_title %}Referência do modelo de contrato{% endblock %}
+{% block topbar_subtitle %}Onde cada variável aparece no Word, como cadastrar opções e qual usar como valor interno{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('docs.download_template') }}" class="btn btn-outline-primary">
+    <i class="bi bi-download"></i> Baixar modelo Word
+</a>
+{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="h3 mb-0">Referência do modelo de contrato</h1>
-        <p class="text-muted mb-0">Onde cada variável aparece no Word, como cadastrar opções e qual usar como valor interno.</p>
-    </div>
-    <a href="{{ url_for('docs.download_template') }}" class="btn btn-outline-primary">Baixar modelo Word</a>
-</div>
-
-<ul class="nav nav-tabs mb-4" id="refTabs" role="tablist">
-    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-vars">Variáveis Word</button></li>
-    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-opcoes">Campos de opções</button></li>
-    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-cadastradas">Opções cadastradas</button></li>
-    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-form">Formulário</button></li>
+<ul class="nav nav-tabs" id="refTabs" role="tablist">
+    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-vars"><i class="bi bi-braces me-1"></i> Variáveis Word</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-opcoes"><i class="bi bi-sliders me-1"></i> Campos de opções</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-cadastradas"><i class="bi bi-list-check me-1"></i> Opções cadastradas</button></li>
+    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-form"><i class="bi bi-ui-checks me-1"></i> Formulário</button></li>
 </ul>
 
 <div class="tab-content">
     <div class="tab-pane fade show active" id="tab-vars">
         {% if missing_in_docx %}
         <div class="alert alert-warning">
-            <strong>Placeholders ausentes no .docx atual:</strong>
-            {% for v in missing_in_docx %}<code class="me-1">{{ "{{ " }}{{ v }}{{ " }}" }}</code>{% endfor %}
-            — regenere com <code>python scripts/build_template.py</code> ou edite o Word manualmente.
+            <i class="bi bi-exclamation-triangle"></i>
+            <div>
+                <strong>Placeholders ausentes no .docx atual:</strong>
+                {% for v in missing_in_docx %}<code class="me-1">{{ "{{ " }}{{ v }}{{ " }}" }}</code>{% endfor %}
+                — regenere com <code>python scripts/build_template.py</code> ou edite o Word manualmente.
+            </div>
         </div>
         {% endif %}
 
-        <div class="table-responsive">
-            <table class="table table-sm table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Variável Word</th>
-                        <th>Seção</th>
-                        <th>Onde no documento</th>
-                        <th>Origem do valor</th>
-                        <th>Campo opção</th>
-                        <th>No .docx?</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for v in word_variables %}
-                    <tr>
-                        <td><code>{{ "{{ " }}{{ v.variable }}{{ " }}" }}</code></td>
-                        <td>{{ v.section }}</td>
-                        <td>{{ v.where }}</td>
-                        <td class="small">{{ v.source }}</td>
-                        <td>{% if v.option_field %}<code>{{ v.option_field }}</code>{% else %}—{% endif %}</td>
-                        <td>
-                            {% if v.variable in missing_in_docx %}
-                            <span class="badge bg-warning text-dark">ausente</span>
-                            {% else %}
-                            <span class="badge bg-success">ok</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="table-wrap mt-3">
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Variável Word</th>
+                            <th>Seção</th>
+                            <th>Onde no documento</th>
+                            <th>Origem do valor</th>
+                            <th>Campo opção</th>
+                            <th>No .docx?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for v in word_variables %}
+                        <tr>
+                            <td><code>{{ "{{ " }}{{ v.variable }}{{ " }}" }}</code></td>
+                            <td>{{ v.section }}</td>
+                            <td>{{ v.where }}</td>
+                            <td class="small">{{ v.source }}</td>
+                            <td>{% if v.option_field %}<code>{{ v.option_field }}</code>{% else %}—{% endif %}</td>
+                            <td>
+                                {% if v.variable in missing_in_docx %}
+                                <span class="badge badge-warning">ausente</span>
+                                {% else %}
+                                <span class="badge badge-success">ok</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         {% if conditional_tags %}
-        <h2 class="h5 mt-4">Blocos condicionais</h2>
-        <ul>
-            {% for t in conditional_tags %}<li><code>{{ t }}</code></li>{% endfor %}
-        </ul>
-        <p class="small text-muted">Ex.: 13ª parcela — <code>extra_data_json</code>: <code>{"exibir_clausula": false}</code> omite a cláusula 4.6.</p>
+        <div class="card mt-4">
+            <div class="card-header">
+                <span class="card-header-icon"><i class="bi bi-diagram-3"></i> Blocos condicionais</span>
+            </div>
+            <div class="card-body">
+                <ul class="mb-2">
+                    {% for t in conditional_tags %}<li><code>{{ t }}</code></li>{% endfor %}
+                </ul>
+                <p class="small text-secondary-custom mb-0">Ex.: 13ª parcela — <code>extra_data_json</code>: <code>{"exibir_clausula": false}</code> omite a cláusula 4.6.</p>
+            </div>
+        </div>
         {% endif %}
     </div>
 
     <div class="tab-pane fade" id="tab-opcoes">
-        <p>Ao cadastrar em <a href="{{ url_for('options.list_options') }}">Opções</a>, use exatamente estes valores no campo <strong>Campo</strong> e escolha um <strong>valor interno</strong> único (sem espaços, preferir <code>snake_case</code>).</p>
-        <div class="table-responsive">
-            <table class="table table-sm">
-                <thead class="table-light">
-                    <tr>
-                        <th>Campo (field_name)</th>
-                        <th>Nome exibido</th>
-                        <th>Bloco formulário</th>
-                        <th>Exemplo valor interno</th>
-                        <th>Uso do texto completo (full_text)</th>
-                        <th>extra_data_json</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for g in option_guide %}
-                    <tr>
-                        <td><code>{{ g.field_name }}</code></td>
-                        <td>{{ field_names[g.field_name] }}</td>
-                        <td>{{ g.form_block }}</td>
-                        <td><code>{{ g.valor_interno_hint }}</code></td>
-                        <td class="small">{{ g.full_text_use }}</td>
-                        <td class="small"><code>{{ g.extra_data_use }}</code></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <p class="text-secondary-custom">Ao cadastrar em <a href="{{ url_for('options.list_options') }}">Opções</a>, use exatamente estes valores no campo <strong>Campo</strong> e escolha um <strong>valor interno</strong> único (sem espaços, preferir <code>snake_case</code>).</p>
+        <div class="table-wrap mt-3">
+            <div class="table-responsive">
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Campo (field_name)</th>
+                            <th>Nome exibido</th>
+                            <th>Bloco formulário</th>
+                            <th>Exemplo valor interno</th>
+                            <th>Uso do texto completo (full_text)</th>
+                            <th>extra_data_json</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for g in option_guide %}
+                        <tr>
+                            <td><code>{{ g.field_name }}</code></td>
+                            <td>{{ field_names[g.field_name] }}</td>
+                            <td>{{ g.form_block }}</td>
+                            <td><code>{{ g.valor_interno_hint }}</code></td>
+                            <td class="small">{{ g.full_text_use }}</td>
+                            <td class="small"><code>{{ g.extra_data_use }}</code></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="card mt-3">
+        <div class="card mt-4">
             <div class="card-body">
-                <h2 class="h6 card-title">Regras rápidas</h2>
-                <ul class="mb-0 small">
+                <h2 class="h6 fw-semibold mb-3"><i class="bi bi-lightbulb text-warning me-1"></i> Regras rápidas</h2>
+                <ul class="mb-0 small text-secondary-custom">
                     <li><strong>Nome exibido</strong> → aparece na lista suspensa do formulário.</li>
                     <li><strong>Valor interno</strong> → salvo no formulário e usado para buscar a opção no banco (<code>option_value</code>).</li>
                     <li><strong>Texto completo</strong> → inserido na cláusula correspondente do contrato.</li>
@@ -112,28 +125,38 @@
     </div>
 
     <div class="tab-pane fade" id="tab-cadastradas">
-        <p class="text-muted">Valores internos já cadastrados no sistema (use os mesmos ao criar novas opções compatíveis).</p>
+        <p class="text-secondary-custom">Valores internos já cadastrados no sistema (use os mesmos ao criar novas opções compatíveis).</p>
         {% for field, opts in options_by_field.items() %}
-        <div class="card mb-3">
-            <div class="card-header fw-semibold"><code>{{ field }}</code> — {{ field_names[field] }}</div>
+        <div class="card mt-3">
+            <div class="card-header">
+                <code>{{ field }}</code> — {{ field_names[field] }}
+            </div>
             <div class="card-body p-0">
                 {% if opts %}
-                <table class="table table-sm mb-0">
-                    <thead><tr><th>Label</th><th>Valor interno</th><th>Ativa</th><th>Texto completo (início)</th><th>extra_data</th></tr></thead>
-                    <tbody>
-                        {% for o in opts %}
-                        <tr class="{% if not o.is_active %}table-secondary{% endif %}">
-                            <td>{{ o.option_label }}</td>
-                            <td><code>{{ o.option_value }}</code></td>
-                            <td>{% if o.is_active %}Sim{% else %}Não{% endif %}</td>
-                            <td class="small text-truncate" style="max-width:280px">{{ (o.full_text or '—')[:120] }}{% if o.full_text and o.full_text|length > 120 %}…{% endif %}</td>
-                            <td class="small"><code>{{ o.extra_data_json or '{}' }}</code></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>Label</th><th>Valor interno</th><th>Ativa</th><th>Texto completo (início)</th><th>extra_data</th></tr></thead>
+                        <tbody>
+                            {% for o in opts %}
+                            <tr class="{% if not o.is_active %}row-inactive{% endif %}">
+                                <td>{{ o.option_label }}</td>
+                                <td><code>{{ o.option_value }}</code></td>
+                                <td>
+                                    {% if o.is_active %}
+                                    <span class="badge badge-success">Sim</span>
+                                    {% else %}
+                                    <span class="badge badge-secondary">Não</span>
+                                    {% endif %}
+                                </td>
+                                <td class="small text-truncate" style="max-width:280px">{{ (o.full_text or '—')[:120] }}{% if o.full_text and o.full_text|length > 120 %}…{% endif %}</td>
+                                <td class="small"><code>{{ o.extra_data_json or '{}' }}</code></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
                 {% else %}
-                <p class="p-3 mb-0 text-muted">Nenhuma opção cadastrada. <a href="{{ url_for('options.create_option') }}">Criar opção</a></p>
+                <p class="p-3 mb-0 text-secondary-custom">Nenhuma opção cadastrada. <a href="{{ url_for('options.create_option') }}">Criar opção</a></p>
                 {% endif %}
             </div>
         </div>
@@ -141,20 +164,22 @@
     </div>
 
     <div class="tab-pane fade" id="tab-form">
-        <p class="text-muted">Campos preenchidos diretamente no formulário (não vêm da tabela de opções).</p>
-        <table class="table table-sm">
-            <thead class="table-light"><tr><th>Campo</th><th>Bloco</th><th>Tipo</th><th>Obrigatório</th></tr></thead>
-            <tbody>
-                {% for f in form_fields %}
-                <tr>
-                    <td><code>{{ f.field }}</code></td>
-                    <td>{{ f.block }}</td>
-                    <td>{{ f.type }}</td>
-                    <td>{% if f.required %}Sim{% else %}Não{% endif %}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <p class="text-secondary-custom">Campos preenchidos diretamente no formulário (não vêm da tabela de opções).</p>
+        <div class="table-wrap mt-3">
+            <table class="table table-sm mb-0">
+                <thead><tr><th>Campo</th><th>Bloco</th><th>Tipo</th><th>Obrigatório</th></tr></thead>
+                <tbody>
+                    {% for f in form_fields %}
+                    <tr>
+                        <td><code>{{ f.field }}</code></td>
+                        <td>{{ f.block }}</td>
+                        <td>{{ f.type }}</td>
+                        <td>{% if f.required %}<span class="badge badge-success">Sim</span>{% else %}<span class="badge badge-secondary">Não</span>{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}
