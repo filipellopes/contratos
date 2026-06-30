@@ -26,8 +26,8 @@
             <thead>
                 <tr>
                     <th>Campo</th>
-                    <th>Label</th>
-                    <th>Valor</th>
+                    <th>Nome exibido na lista</th>
+                    <th>Texto completo</th>
                     <th>Ordem</th>
                     <th>Ativa</th>
                     <th>Ações</th>
@@ -38,7 +38,7 @@
                 <tr class="{% if not option.is_active %}row-inactive{% endif %}">
                     <td>{{ option.field_label }}</td>
                     <td class="fw-medium">{{ option.option_label }}</td>
-                    <td><code>{{ option.option_value }}</code></td>
+                    <td class="small text-secondary-custom text-truncate" style="max-width:320px">{{ (option.full_text or '—')[:80] }}{% if option.full_text and option.full_text|length > 80 %}…{% endif %}</td>
                     <td>{{ option.sort_order }}</td>
                     <td>
                         {% if option.is_active %}
@@ -64,7 +64,7 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="6" class="empty-state">
+                        <td colspan="6" class="empty-state" style="text-align:center">
                         <i class="bi bi-sliders"></i>
                         Nenhuma opção cadastrada.
                     </td>
